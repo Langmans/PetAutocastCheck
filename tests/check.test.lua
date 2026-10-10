@@ -11,7 +11,7 @@ test("joining a group with Growl on toasts; leaving takes the toast away", funct
     eq(client.toast.Name.text, "Growl")
     eq(client.toast.Icon.texture, 132270)
     eq(client.toast.Reason.text, "You are in a group: your pet taunts mobs off the tank.")
-    eq(client.toast.Hint.text, "Right-click it on the pet bar to turn autocast off.")
+    eq(client.toast.Hint.text, "Right-click it on the pet bar or in your pet's spellbook to turn autocast off.")
     client:group(false)
     client:animate(1)
     eq(client.toast.shown, false, "faded out at once")
@@ -27,7 +27,8 @@ end)
 
 test("a higher rank of Growl counts too", function()
     local client = NewClient()
-    client.petBar[4] = { 14916, true }
+    client.petBar[3] = { 14916, true }
+    client.petBook[6] = { 14916, true }
     client:login():group(true)
     eq(client:toastTitle(), "Growl is on autocast")
 end)
@@ -41,14 +42,13 @@ end)
 test("in kite mode Cower off toasts and Cower on is right", function()
     local client = NewClient({ savedDB = { kite = true } }):login()
     eq(client:toastTitle(), "Cower is not on autocast")
-    eq(client.toast.Hint.text, "Right-click it on the pet bar to turn autocast on.")
+    eq(client.toast.Hint.text, "Right-click it on the pet bar or in your pet's spellbook to turn autocast on.")
     client:autocast(COWER, true):animate(1)
     eq(client.toast.shown, false)
 end)
 
 test("Growl and Cower at once show one after the other, Growl first", function()
-    local client = NewClient()
-    client.petBar[5] = { 1742, true }
+    local client = NewClient():setAutocast(COWER, true)
     client.inGroup = true
     client:login()
     eq(client:toastTitle(), "Growl is on autocast")
@@ -88,8 +88,7 @@ test("without the reminder, combat starting only toasts what is new", function()
 end)
 
 test("the Growl and Cower settings switch their warnings off", function()
-    local client = NewClient({ savedDB = { growl = false, cower = false } })
-    client.petBar[5] = { 1742, true }
+    local client = NewClient({ savedDB = { growl = false, cower = false } }):setAutocast(COWER, true)
     client.inGroup = true
     client:login()
     eq(client.toast.shown, false)
@@ -108,12 +107,50 @@ test("a pet summoned or dismissed is checked; another unit's pet is not", functi
     eq(client:toastTitle(), "Growl is on autocast")
 end)
 
-test("an ability that cannot autocast, a token or an empty slot is skipped", function()
+test("on the pet bar, an ability that cannot autocast, a token or an empty slot is skipped", function()
     local client = NewClient()
     client.petBar = { { token = "PET_ACTION_ATTACK" }, { 2649 } }
+    client.petBook = {}
     client:login():group(true)
     eq(client.toast.shown, false)
     eq(client.ns.PetAutocasts()["Growl"], nil)
+end)
+
+test("in the spellbook, a command or an ability that cannot autocast is skipped", function()
+    local states = NewClient({ noPetBarAPI = true }).ns.PetAutocasts()
+    eq(states["Attack"], nil)
+    eq(states["Great Stamina"], nil)
+    eq(states["Cower"].on, false)
+    eq(states["Growl"].on, true)
+end)
+
+test("Cower is seen in the spellbook though it is not on the pet bar", function()
+    local client = NewClient({ savedDB = { kite = true } }):login()
+    eq(client:toastTitle(), "Cower is not on autocast")
+    eq(client.toast.Icon.texture, 132118, "the icon comes from the spell itself")
+end)
+
+test("a client with only the old spellbook globals reads the pet bar alone", function()
+    local client = NewClient({ oldSpellBookAPI = true, savedDB = { kite = true } }):login()
+    eq(client.toast.shown, false, "Cower is only in the book")
+    client:group(true)
+    eq(client:toastTitle(), "Growl is on autocast")
+end)
+
+test("a spellbook entry that cannot be read is skipped; the rest is read", function()
+    local client = NewClient({ noPetBarAPI = true })
+    client.petBook[1] = { broken = true }
+    client.petBook[2] = { 17253, true, noInfo = true }
+    local states = client.ns.PetAutocasts()
+    eq(states["Bite"], nil, "no name, no entry")
+    eq(states["Cower"].on, false)
+end)
+
+test("without the pet spell count, only the pet bar is read", function()
+    local client = NewClient({ noPetSpellCount = true, savedDB = { kite = true } }):login()
+    eq(client.toast.shown, false, "Cower is only in the book")
+    client:group(true)
+    eq(client:toastTitle(), "Growl is on autocast", "Growl is on the bar")
 end)
 
 test("an autocast state the client hides is skipped", function()
@@ -123,8 +160,14 @@ test("an autocast state the client hides is skipped", function()
     eq(client.toast.shown, false)
 end)
 
-test("without the pet bar API nothing is seen", function()
+test("without the pet bar API the spellbook still sees it all", function()
     local client = NewClient({ noPetBarAPI = true }):login():group(true)
+    eq(client:toastTitle(), "Growl is on autocast")
+    eq(client.toast.Icon.texture, 132270)
+end)
+
+test("without the pet bar and the spellbook nothing is seen", function()
+    local client = NewClient({ noPetBarAPI = true, noSpellBookAPI = true }):login():group(true)
     eq(client.toast.shown, false)
 end)
 

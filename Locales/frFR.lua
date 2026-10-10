@@ -7,8 +7,10 @@ ns.Locales.frFR = {
         REASON_GROWL = "Vous êtes en groupe : votre familier arrache les monstres au tank.",
         REASON_COWER = "Votre familier jette sa menace. Le mode kite est désactivé.",
         REASON_KITE = "Le mode kite est activé : votre familier doit perdre de la menace pendant que vous kitez.",
-        HINT_TURN_OFF = "Clic droit dessus dans la barre du familier pour couper le lancement automatique.",
-        HINT_TURN_ON = "Clic droit dessus dans la barre du familier pour activer le lancement automatique.",
+        HINT_TURN_OFF = "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
+            .. "pour couper le lancement automatique.",
+        HINT_TURN_ON = "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
+            .. "pour activer le lancement automatique.",
 
         STATUS = "Mode kite %s. Surveillance de Grondement %s, Dérobade %s, rappel en combat %s. "
             .. "Alerte pendant %d s à la taille %.2f, son %s, débogage %s. Commandes : %s",
@@ -44,7 +46,7 @@ ns.Locales.frFR = {
             .. "Dérobade sauf quand vous kitez. En mode kite, c'est l'inverse pour Dérobade : elle doit "
             .. "être activée.\n\n"
             .. "Faites glisser l'alerte pour la déplacer, clic droit pour la fermer, survolez-la pour la "
-            .. "garder. Seules les techniques de la barre du familier sont vues. Tapez /pac pour les commandes.",
+            .. "garder. Tapez /pac pour les commandes.",
         OPTION_SETTINGS = "Réglages",
         OPTION_KITE = "Mode kite",
         OPTION_KITE_NOTE = "Dérobade doit être en lancement automatique, et une alerte le dit quand elle ne "

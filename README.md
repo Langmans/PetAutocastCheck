@@ -6,12 +6,12 @@ Cower is on autocast when it should not be:
 > **Growl is on autocast**
 > Growl
 > You are in a group: your pet taunts mobs off the tank.
-> Right-click it on the pet bar to turn autocast off.
+> Right-click it on the pet bar or in your pet's spellbook to turn autocast off.
 
 Growl on autocast is what you want solo, and what the tank does not want in a
 dungeon. Cower on autocast throws away the threat your pet holds, which is
-only what you want while you kite. Both are one right-click on the pet bar,
-and both are easy to forget. This addon tells you the moment it matters.
+only what you want while you kite. Both are one right-click on the pet bar
+or in the pet's spellbook, and both are easy to forget. This addon tells you the moment it matters.
 
 The toast looks like
 [Pet Ability Learned](https://github.com/Langmans/PetAbilityLearned)'s
@@ -35,8 +35,8 @@ off with `/pac remind off`).
 - The toast stays for 6 seconds, then fades. Hover over it to keep it up,
   right-click to close it, drag it to move it. Two problems at once show one
   after the other.
-- Only abilities on the pet bar are seen; that is where the game reports
-  their autocast state.
+- Growl and Cower are seen whether they are on the pet bar or only in the
+  pet's spellbook (Cower often is not on the bar).
 - It only watches on hunters. On other characters the addon stays loaded but
   idle; `/pac` and the panel still work there.
 
@@ -92,7 +92,7 @@ commands too (`/petautocastcheck` works as well):
 - `/pac growl on|off` and `/pac cower on|off` switch each warning.
 - `/pac remind on|off` switches the reminder when combat starts.
 - `/pac test [growl|cower|kite]` shows the toast for that problem, whatever
-  your pet bar says. Nothing else happens.
+  your pet says. Nothing else happens.
 - `/pac duration <seconds>` sets how long the toast stays (default 6).
 - `/pac scale <0.3-3>` sets its size (default 1).
 - `/pac sound family` plays your pet's call (the default; `/pac sound on` does
@@ -142,7 +142,7 @@ In `.toc` order; all share the addon namespace `ns`.
 - `Toast.lua` — the toast frame (`ns.ShowToast`, `ns.DropToast`,
   `ns.HideToast`): its background, the glowing texts, the animation on one
   `OnUpdate` clock, the queue, and the sound (`FAMILY_SOUNDS`).
-- `Check.lua` — reading the pet bar (`ns.PetAutocasts`), the rules
+- `Check.lua` — reading the pet's spellbook and pet bar (`ns.PetAutocasts`), the rules
   (`PROBLEMS`, `ns.ProblemToast`, `ns.Check`) and the event frame (one method
   per event).
 - `Commands.lua` — `/pac`: one function per subcommand in a `Commands` table,
@@ -169,10 +169,22 @@ its default shows through, numbers are put back in range, and
 
 ### How it works
 
-- The autocast state comes from `GetPetActionInfo(slot)` for the ten pet bar
-  slots: its sixth return, `autoCastEnabled`, for slots whose fifth,
-  `autoCastAllowed`, is set. Tokens (Attack, Follow, the stances) are
-  skipped, and so is a value the client hides (`issecretvalue`).
+- The autocast state comes from two places, read in this order:
+  - the pet's spellbook, which holds every ability whether it is on the bar
+    or not: `C_SpellBook.HasPetSpells` for the count, then per entry
+    `GetSpellBookItemInfo` (the name) and `GetSpellBookItemAutoCast`
+    (allowed, enabled), with `Enum.SpellBookSpellBank.Pet`. Commands (Attack,
+    Follow) return neither value. A client without these (Classic Era has
+    only the old `GetSpellAutocast`) is left to the pet bar.
+  - `GetPetActionInfo(slot)` for the ten pet bar slots: its fifth and sixth
+    returns, `autoCastAllowed` and `autoCastEnabled`. It also gives the
+    ability's icon. Tokens (Attack, Follow, the stances; `isToken` is `1`)
+    are skipped.
+
+  Only abilities that can autocast count, and a value the client hides
+  (`issecretvalue`) is skipped. Measured on Forever: the values are not
+  hidden in combat, and a right-click on the pet bar fires `PET_BAR_UPDATE`
+  (Blizzard's spellbook redraws its pet autocast on that event as well).
 - Growl and Cower are recognised by name: the names of spells 2649 and 1742
   are looked up in the client, and every rank carries the same name, so
   nothing compares English text.
@@ -254,7 +266,7 @@ git -C "<WoW>/Interface/AddOns/PetAutocastCheck" merge --ff-only main
 ```
 
 fengari is Lua 5.3 and WoW runs 5.1; the addon sticks to the shared subset and
-WoW Lua LS flags WoW-incompatible API use. What the simulation cannot show —
-whether Forever's `GetPetActionInfo` returns autocast as the Classic pet bar
-code reads it, and whether `PET_BAR_UPDATE` fires on a right-click — is what
-the debug trace is for.
+WoW Lua LS flags WoW-incompatible API use. The simulated pet bar and spellbook
+return what Forever was measured to return (see How it works); whether a
+right-click in the spellbook fires `PET_BAR_UPDATE` too is what the debug
+trace is for.

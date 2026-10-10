@@ -15,8 +15,8 @@ ns.Locales.enUS = {
         REASON_GROWL = "You are in a group: your pet taunts mobs off the tank.",
         REASON_COWER = "Your pet throws away its threat. Kite mode is off.",
         REASON_KITE = "Kite mode is on: your pet should shed threat while you kite.",
-        HINT_TURN_OFF = "Right-click it on the pet bar to turn autocast off.",
-        HINT_TURN_ON = "Right-click it on the pet bar to turn autocast on.",
+        HINT_TURN_OFF = "Right-click it on the pet bar or in your pet's spellbook to turn autocast off.",
+        HINT_TURN_ON = "Right-click it on the pet bar or in your pet's spellbook to turn autocast on.",
 
         -- /pac. STATUS: kite mode, Growl, Cower and the combat reminder on/off, the toast's
         -- duration in seconds and scale, sound (a SOUND_NAME_* or STATUS_OFF), debug on/off, the
@@ -58,7 +58,7 @@ ns.Locales.enUS = {
             .. "autocast when it should not be: Growl while you are in a group, Cower unless you kite. "
             .. "In kite mode it is the other way round for Cower: it should be on.\n\n"
             .. "Drag the toast to move it, right-click to close it, hover to keep it up. "
-            .. "Only abilities on the pet bar are seen. Type /pac for the commands.",
+            .. "Type /pac for the commands.",
         OPTION_SETTINGS = "Settings",
         OPTION_KITE = "Kite mode",
         OPTION_KITE_NOTE = "Cower belongs on autocast, and a toast says so when it is off. "

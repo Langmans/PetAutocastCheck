@@ -10,6 +10,8 @@ local SPELLS = {
         [14916] = { "Growl", 132270 }, -- a higher rank: same name
         [1742] = { "Cower", 132118 },
         [17253] = { "Bite", 132278 },
+        [16828] = { "Claw", 132140 },
+        [4187] = { "Great Stamina", 136112 },
     },
     deDE = {
         [2649] = { "Knurren", 132270 },
@@ -19,7 +21,7 @@ local SPELLS = {
     },
 }
 
----@param opts {locale: string?, class: string?, savedDB: table?, oldSpellAPI: boolean?, noSpellAPI: boolean?, noTextureAPI: boolean?, noPetBarAPI: boolean?, noMasks: boolean?, oldCheckButton: boolean?, oldSlider: boolean?, metadata: table?, noAddOnsAPI: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, oldSpellAPI: boolean?, noSpellAPI: boolean?, noTextureAPI: boolean?, noPetBarAPI: boolean?, oldSpellBookAPI: boolean?, noSpellBookAPI: boolean?, noPetSpellCount: boolean?, noMasks: boolean?, oldCheckButton: boolean?, oldSlider: boolean?, metadata: table?, noAddOnsAPI: boolean?}?
 function NewClient(opts)
     opts = opts or {}
     -- opts.locale: the client's language. Spell names exist here for enUS and deDE; any other
@@ -37,13 +39,23 @@ function NewClient(opts)
         sounds = {},
         -- The pet bar of the active pet: one entry per slot, { spellID, autocast } for a spell
         -- (autocast nil when it cannot autocast) or { token = "PET_ACTION_ATTACK" }. nil means
-        -- no pet out.
+        -- no pet out. As measured on Forever (DevProbes' PetAutocast): Cower is not on the bar.
         petBar = {
             { token = "PET_ACTION_ATTACK" },
             { token = "PET_ACTION_FOLLOW" },
-            { 17253, true },
             { 2649, true },
+            { 16828, true },
+            { 17253, true },
+        },
+        -- The pet's spellbook, alphabetical like the client's: { spellID, autocast } as above,
+        -- { token = "Attack" } for a command, { broken = true } for an entry whose lookup errors.
+        petBook = {
+            { token = "Attack" },
+            { 17253, true },
+            { 16828, true },
             { 1742, false },
+            { 4187 },
+            { 2649, true },
         },
         inGroup = false,
         mouseOver = false,
@@ -100,9 +112,9 @@ function NewClient(opts)
         C_Spell = { GetSpellName = getName, GetSpellTexture = not opts.noTextureAPI and getTexture or nil }
     end
 
-    -- GetPetActionInfo as the Classic pet bar reads it: name, texture, isToken, isActive,
-    -- autoCastAllowed, autoCastEnabled, spellID. A token's name is a global string's name.
-    -- Absent with opts.noPetBarAPI.
+    -- GetPetActionInfo as Forever returns it (DevProbes' PetAutocast): name, texture, isToken,
+    -- isActive, autoCastAllowed, autoCastEnabled, spellID. A token's name is a global string's
+    -- name, and its isToken is 1 rather than true. Absent with opts.noPetBarAPI.
     NUM_PET_ACTION_SLOTS = 10
     if opts.noPetBarAPI then
         GetPetActionInfo = nil
@@ -110,10 +122,56 @@ function NewClient(opts)
         function GetPetActionInfo(slot)
             local entry = client.petBar and client.petBar[slot]
             if not entry then return nil end
-            if entry.token then return entry.token, entry.token .. "_TEXTURE", true, false, false, false end
+            if entry.token then return entry.token, entry.token .. "_TEXTURE", 1, nil, false, false end
             local id, autocast = entry[1], entry[2]
-            return getName(id), getTexture(id), false, false, autocast ~= nil, autocast == true, id
+            return getName(id), getTexture(id), nil, nil, autocast ~= nil, autocast == true, id
         end
+    end
+
+    -- The pet's spellbook: C_SpellBook on Forever (with Enum.SpellBookSpellBank.Pet), the old
+    -- globals with BOOKTYPE_PET with opts.oldSpellBookAPI (as Classic Era has them; the addon
+    -- does not use them), nothing with opts.noSpellBookAPI. opts.noPetSpellCount leaves out only
+    -- the count (HasPetSpells). A command (Attack, Follow) is in the book but cannot autocast:
+    -- both values nil, as Forever returns them.
+    local function bookEntry(index)
+        local entry = client.petBook[index]
+        assert(not entry.broken, "this entry's lookup errors")
+        if entry.token then return entry.token, nil, nil end
+        return getName(entry[1]), entry[2] ~= nil, entry[2] == true
+    end
+    local function petSpellCount()
+        if not client.petBar then return nil end
+        return #client.petBook, "PET"
+    end
+    Enum = { SpellBookSpellBank = { Player = 0, Pet = 1 } }
+    BOOKTYPE_PET = "pet"
+    C_SpellBook, HasPetSpells, GetSpellBookItemName, GetSpellAutocast = nil, nil, nil, nil
+    if opts.oldSpellBookAPI then
+        HasPetSpells = petSpellCount
+        function GetSpellBookItemName(index, book)
+            assert(book == BOOKTYPE_PET, "the old API names the pet's book with BOOKTYPE_PET")
+            return (bookEntry(index))
+        end
+        function GetSpellAutocast(index, book)
+            assert(book == BOOKTYPE_PET, "the old API names the pet's book with BOOKTYPE_PET")
+            local _, allowed, on = bookEntry(index)
+            return allowed, on
+        end
+    elseif not opts.noSpellBookAPI then
+        C_SpellBook = {
+            HasPetSpells = not opts.noPetSpellCount and petSpellCount or nil,
+            GetSpellBookItemInfo = function(index, bank)
+                assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
+                local entry = client.petBook[index]
+                if entry.noInfo then return nil end
+                return { name = (bookEntry(index)) }
+            end,
+            GetSpellBookItemAutoCast = function(index, bank)
+                assert(bank == Enum.SpellBookSpellBank.Pet, "pet spellbook bank expected")
+                local _, allowed, on = bookEntry(index)
+                return allowed, on
+            end,
+        }
     end
 
     C_Timer = {
@@ -343,12 +401,19 @@ function NewClient(opts)
         return self:advance(0.2)
     end
 
-    ---Switches autocast of the pet bar slot holding `id`.
-    function client:autocast(id, on)
-        for _, entry in ipairs(self.petBar) do
-            if entry[1] == id then entry[2] = on end
+    ---Sets autocast of the ability `id` wherever the pet has it, bar and book, without an event.
+    function client:setAutocast(id, on)
+        for _, list in ipairs({ self.petBar, self.petBook }) do
+            for _, entry in ipairs(list) do
+                if entry[1] == id then entry[2] = on end
+            end
         end
-        return self:petBarUpdate()
+        return self
+    end
+
+    ---Switches autocast of the ability `id`, as a right-click does: PET_BAR_UPDATE follows.
+    function client:autocast(id, on)
+        return self:setAutocast(id, on):petBarUpdate()
     end
 
     ---Joins or leaves a group.

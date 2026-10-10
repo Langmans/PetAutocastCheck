@@ -9,8 +9,9 @@ local ADDON_NAME, ns = ...
 -- Each problem toasts when it starts; when it is solved, its toast goes away. With the remind
 -- setting, everything still wrong toasts again when combat starts.
 --
--- The state comes from GetPetActionInfo, so only abilities on the pet bar are seen. Ability
--- names come from the client by spell ID, so the check works in any language and at any rank.
+-- The state comes from the pet's spellbook, which holds every ability whether it is on the pet
+-- bar or not (Cower often is not), and from the pet bar. Ability names come from the client by
+-- spell ID, so the check works in any language and at any rank.
 
 local L = ns.L
 
@@ -38,20 +39,55 @@ local function Readable(v)
     return not (issecretvalue and issecretvalue(v))
 end
 
----The abilities on the pet bar that can autocast, by name, with whether autocast is on. Empty
----without a pet.
+---Adds an ability that can autocast to `states`, unless its state is unreadable.
+---@param states table<string, PetAutocastCheckAutocastState>
+---@param name GameValue
+---@param allowed GameValue
+---@param enabled GameValue
+---@param icon (number|string)?
+local function Add(states, name, allowed, enabled, icon)
+    if type(name) == "string" and allowed and Readable(enabled) then
+        states[name] = { on = enabled and true or false, icon = icon }
+    end
+end
+
+---Reads the pet's spellbook into `states`, through C_SpellBook as Forever has it. A client
+---without it (Classic Era has only the old globals) is left to the pet bar. A command (Attack,
+---Follow) is in the book too, with no autocast values; an entry that cannot be read is skipped.
+---@param states table<string, PetAutocastCheckAutocastState>
+local function ReadBook(states)
+    local book = C_SpellBook
+    if book and book.GetSpellBookItemAutoCast and book.GetSpellBookItemInfo and book.HasPetSpells then
+        local bank = Enum.SpellBookSpellBank.Pet
+        -- The first value is the count; the client also returns the pet's type ("PET", "DEMON").
+        for index = 1, tonumber((book.HasPetSpells())) or 0 do
+            local okInfo, info = pcall(book.GetSpellBookItemInfo, index, bank)
+            local okCast, allowed, enabled = pcall(book.GetSpellBookItemAutoCast, index, bank)
+            if okInfo and okCast and type(info) == "table" then Add(states, info.name, allowed, enabled) end
+        end
+    end
+end
+
+---Reads the pet bar into `states`; it also gives each ability's icon.
+---@param states table<string, PetAutocastCheckAutocastState>
+local function ReadBar(states)
+    if not GetPetActionInfo then return end
+    for slot = 1, NUM_PET_ACTION_SLOTS or 10 do
+        local name, texture, isToken, _, allowed, enabled = GetPetActionInfo(slot)
+        -- Attack, Follow and the stances are tokens; they never autocast.
+        if not isToken then Add(states, name, allowed, enabled, texture) end
+    end
+end
+
+---The pet's abilities that can autocast, by name, with whether autocast is on. Empty without a
+---pet. The spellbook has them all; the pet bar, read last, gives the ones on it their icon.
 ---@return table<string, PetAutocastCheckAutocastState>
 function ns.PetAutocasts()
     ---@type table<string, PetAutocastCheckAutocastState>
     local states = {}
-    if not UnitExists("pet") or not GetPetActionInfo then return states end
-    for slot = 1, NUM_PET_ACTION_SLOTS or 10 do
-        local name, texture, isToken, _, allowed, enabled = GetPetActionInfo(slot)
-        -- Attack, Follow and the stances are tokens; they never autocast.
-        if type(name) == "string" and not isToken and allowed and Readable(enabled) then
-            states[name] = { on = enabled and true or false, icon = texture }
-        end
-    end
+    if not UnitExists("pet") then return states end
+    ReadBook(states)
+    ReadBar(states)
     return states
 end
 
@@ -163,7 +199,8 @@ function frame:PLAYER_LOGOUT()
     ns.StripDefaults()
 end
 
--- Autocast switched, or the bar filled after a summon.
+-- Autocast switched, on the pet bar or in the spellbook (Blizzard's spellbook redraws its pet
+-- autocast on this event too), or the bar filled after a summon.
 frame.PET_BAR_UPDATE = ScheduleCheck
 
 -- Joined or left a group.

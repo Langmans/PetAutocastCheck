@@ -68,7 +68,11 @@ end)
 test("the toast and the panel speak the client's language", function()
     local client = NewClient({ locale = "frFR" }):login()
     client:slash("test")
-    eq(client.toast.Hint.text, "Clic droit dessus dans la barre du familier pour couper le lancement automatique.")
+    eq(
+        client.toast.Hint.text,
+        "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
+            .. "pour couper le lancement automatique."
+    )
     eq(client.categories[1].name, "Pet Autocast Check", "the title is untranslated, so English")
     client:slash("sound off")
     ok(client:printedContains("Son désactivé."))

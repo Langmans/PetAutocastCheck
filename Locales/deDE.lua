@@ -7,8 +7,10 @@ ns.Locales.deDE = {
         REASON_GROWL = "Du bist in einer Gruppe: dein Begleiter spottet dem Tank die Gegner weg.",
         REASON_COWER = "Dein Begleiter wirft seine Bedrohung weg. Der Kite-Modus ist aus.",
         REASON_KITE = "Der Kite-Modus ist an: dein Begleiter soll Bedrohung abbauen, während du kitest.",
-        HINT_TURN_OFF = "Rechtsklick darauf in der Begleiterleiste schaltet das automatische Wirken aus.",
-        HINT_TURN_ON = "Rechtsklick darauf in der Begleiterleiste schaltet das automatische Wirken ein.",
+        HINT_TURN_OFF = "Rechtsklick darauf in der Begleiterleiste oder im Zauberbuch deines Begleiters "
+            .. "schaltet das automatische Wirken aus.",
+        HINT_TURN_ON = "Rechtsklick darauf in der Begleiterleiste oder im Zauberbuch deines Begleiters "
+            .. "schaltet das automatische Wirken ein.",
 
         STATUS = "Kite-Modus %s. Überwacht: Knurren %s, Ducken %s, Erinnerung im Kampf %s. "
             .. "Anzeige für %d s mit Größe %.2f, Ton %s, Debug %s. Befehle: %s",
@@ -43,7 +45,7 @@ ns.Locales.deDE = {
             .. "automatisch gewirkt wird, obwohl das nicht sein sollte: Knurren in einer Gruppe, Ducken "
             .. "außer beim Kiten. Im Kite-Modus ist es bei Ducken umgekehrt: es soll an sein.\n\n"
             .. "Ziehe die Anzeige, um sie zu verschieben, Rechtsklick schließt sie, mit der Maus darüber "
-            .. "bleibt sie stehen. Nur Fähigkeiten in der Begleiterleiste werden gesehen. /pac zeigt die Befehle.",
+            .. "bleibt sie stehen. /pac zeigt die Befehle.",
         OPTION_SETTINGS = "Einstellungen",
         OPTION_KITE = "Kite-Modus",
         OPTION_KITE_NOTE = "Ducken gehört auf automatisch, und eine Anzeige sagt es, wenn es aus ist. "

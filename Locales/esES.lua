@@ -7,8 +7,10 @@ ns.Locales.esES = {
         REASON_GROWL = "Estás en un grupo: tu mascota le quita los enemigos al tanque.",
         REASON_COWER = "Tu mascota tira su amenaza. El modo kite está desactivado.",
         REASON_KITE = "El modo kite está activado: tu mascota debe soltar amenaza mientras kiteas.",
-        HINT_TURN_OFF = "Haz clic derecho en ella en la barra de mascota para quitar el lanzamiento automático.",
-        HINT_TURN_ON = "Haz clic derecho en ella en la barra de mascota para poner el lanzamiento automático.",
+        HINT_TURN_OFF = "Haz clic derecho en ella en la barra de mascota o en el libro de hechizos de tu "
+            .. "mascota para quitar el lanzamiento automático.",
+        HINT_TURN_ON = "Haz clic derecho en ella en la barra de mascota o en el libro de hechizos de tu "
+            .. "mascota para poner el lanzamiento automático.",
 
         STATUS = "Modo kite %s. Vigilando Gruñido %s, Encogerse %s, recordatorio en combate %s. "
             .. "Aviso durante %d s con tamaño %.2f, sonido %s, depuración %s. Comandos: %s",
@@ -43,7 +45,7 @@ ns.Locales.esES = {
             .. "están en lanzamiento automático sin deber estarlo: Gruñido en un grupo, Encogerse salvo "
             .. "cuando kiteas. En modo kite, Encogerse es al revés: debe estar activado.\n\n"
             .. "Arrastra el aviso para moverlo, clic derecho para cerrarlo, pasa el ratón por encima para "
-            .. "mantenerlo. Solo se ven las habilidades de la barra de mascota. Escribe /pac para los comandos.",
+            .. "mantenerlo. Escribe /pac para los comandos.",
         OPTION_SETTINGS = "Opciones",
         OPTION_KITE = "Modo kite",
         OPTION_KITE_NOTE = "Encogerse va en lanzamiento automático, y un aviso lo dice cuando no lo está. "
