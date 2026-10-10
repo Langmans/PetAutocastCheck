@@ -1,0 +1,6 @@
+<Bindings>
+    <!-- Esc > Options > Keybindings > AddOns. The names shown there are set in Commands.lua. -->
+    <Binding name="PETAUTOCASTCHECK_KITE" header="PETAUTOCASTCHECK" category="ADDONS">
+        PetAutocastCheck_ToggleKite()
+    </Binding>
+</Bindings>

@@ -1,0 +1,32 @@
+{
+    "flavors": ["forever", "classic_era", "classic"],
+    "library": ["annotations/"],
+    "ignore": ["tests/", "node_modules/", "coverage/"],
+    "globals": {
+        "write": [
+            "PetAutocastCheckDB",
+            "SLASH_PETAUTOCASTCHECK1",
+            "SLASH_PETAUTOCASTCHECK2",
+            "BINDING_HEADER_PETAUTOCASTCHECK",
+            "BINDING_NAME_PETAUTOCASTCHECK_KITE",
+            "PetAutocastCheck_ToggleKite"
+        ]
+    },
+    "diagnostics": {
+        "enable": [
+            "need-check-nil",
+            "unknown-local-type",
+            "unknown-param-type",
+            "unknown-return-type",
+            "unknown-field-type",
+            "incomplete-signature-doc"
+        ],
+        "severity": {
+            "unknown-local-type": "warning",
+            "unknown-param-type": "warning",
+            "unknown-return-type": "warning",
+            "unknown-field-type": "warning",
+            "incomplete-signature-doc": "warning"
+        }
+    }
+}

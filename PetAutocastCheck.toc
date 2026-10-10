@@ -1,0 +1,22 @@
+## Interface: 16001
+## Title: PetAutocastCheck
+## Notes: A toast when your hunter pet's Growl or Cower is on autocast when it should not be. Kite mode wants Cower on.
+## Author: Langmans
+## Version: 1.0.0
+## SavedVariables: PetAutocastCheckDB
+## IconTexture: Interface\Icons\Ability_Physical_Taunt
+## X-License: MIT
+## X-Website: https://github.com/Langmans/PetAutocastCheck
+
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\frFR.lua
+Locales\koKR.lua
+Locales\ruRU.lua
+Locale.lua
+Core.lua
+Toast.lua
+Check.lua
+Commands.lua
+Options.lua
