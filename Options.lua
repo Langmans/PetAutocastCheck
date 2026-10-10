@@ -8,6 +8,7 @@ local ADDON_NAME, ns = ...
 --     /pac test.
 -- Everything is filled from ns.db every time the panel is shown, so a change made with /pac in
 -- the meantime shows up; a click writes straight to ns.db and checks the pet bar again.
+-- The whole panel scrolls: the settings window is shorter than the panel on a small screen.
 -- Registered through the Settings API, which every targeted flavor has.
 
 local L = ns.L
@@ -15,18 +16,38 @@ local L = ns.L
 local panel = CreateFrame("Frame")
 ns.OptionsPanel = panel
 
+-- Everything is laid out on `content`, the scroll child, CONTENT_HEIGHT tall: the panel from the
+-- title to the test button, with some room to spare. Its width follows the scroll frame, whose
+-- size the settings window decides; CONTENT_WIDTH only holds until then.
+-- UIPanelScrollFrameTemplate puts its scroll bar just outside the frame's right edge, hence the
+-- room on the right.
+local CONTENT_WIDTH, CONTENT_HEIGHT = 600, 780
+local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+scroll:SetPoint("TOPLEFT", 0, -4)
+scroll:SetPoint("BOTTOMRIGHT", -28, 4)
+local content = CreateFrame("Frame", nil, scroll)
+content:SetSize(CONTENT_WIDTH, CONTENT_HEIGHT)
+scroll:SetScrollChild(content)
+---@param _ ScrollFrame
+---@param width number
+local function onScrollSized(_, width)
+    content:SetWidth(width)
+end
+scroll:SetScript("OnSizeChanged", onScrollSized)
+ns.OptionsContent = content
+
 -- Where UICheckButtonTemplate's label starts, from the box's left edge (the box is 32 wide).
 local CHECKBOX_LABEL_X = 30
 
----Stretches a text anchored at its top left to 16 pixels from the panel's right edge, so it
+---Stretches a text anchored at its top left to 16 pixels from the content's right edge, so it
 ---wraps there.
 ---@param fontString FontString
 local function toRightEdge(fontString)
-    fontString:SetPoint("RIGHT", panel, "RIGHT", -16, 0)
+    fontString:SetPoint("RIGHT", content, "RIGHT", -16, 0)
     fontString:SetJustifyH("LEFT")
 end
 
-local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+local title = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 title:SetPoint("TOPLEFT", 16, -16)
 title:SetText(L.OPTIONS_TITLE)
 
@@ -40,7 +61,7 @@ local function Metadata(key)
     return GetMetadata(ADDON_NAME, key)
 end
 
-local about = panel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+local about = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 about:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
 about:SetText(
     ns.Format("OPTION_ABOUT", Metadata("Version") or "?", Metadata("Author") or "?", Metadata("X-License") or "?")
@@ -50,10 +71,10 @@ local below = about
 
 local URL = Metadata("X-Website")
 if URL then
-    local websiteLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    local websiteLabel = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
     websiteLabel:SetPoint("TOPLEFT", about, "BOTTOMLEFT", 0, -12)
     websiteLabel:SetText(L.OPTION_WEBSITE)
-    local website = CreateFrame("EditBox", nil, panel, "InputBoxTemplate")
+    local website = CreateFrame("EditBox", nil, content, "InputBoxTemplate")
     -- InputBoxTemplate draws its border outside the box; the extra x keeps it clear.
     website:SetPoint("LEFT", websiteLabel, "RIGHT", 12, 0)
     website:SetSize(340, 20)
@@ -100,12 +121,12 @@ local function Place(region, x, gap)
     below, belowX = region, x
 end
 
-local description = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+local description = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 Place(description, 0, 20)
 toRightEdge(description)
 description:SetText(L.OPTION_DESCRIPTION)
 
-local heading = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+local heading = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 Place(heading, 0, 24)
 heading:SetText(L.OPTION_SETTINGS)
 
@@ -127,14 +148,14 @@ end
 ---@param note string
 ---@return CheckButton
 local function AddCheckbox(key, label, note)
-    local box = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+    local box = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
     -- The box has a few pixels of padding; two to the left lines it up with the text above.
     Place(box, -2, 10)
     local text = LabelOf(box)
     text:SetFontObject("GameFontHighlight")
     text:SetText(label)
     -- The note goes under the box, indented to where its label starts.
-    local noteText = panel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    local noteText = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
     Place(noteText, CHECKBOX_LABEL_X, 0)
     toRightEdge(noteText)
     noteText:SetText(note)
@@ -170,7 +191,7 @@ ns.RemindBox = AddCheckbox("remind", L.OPTION_REMIND, L.OPTION_REMIND_NOTE)
 ---@param format fun(value: number): string the title for a value
 ---@return Slider
 local function AddSlider(name, key, low, high, step, format)
-    local slider = CreateFrame("Slider", name, panel, "OptionsSliderTemplate")
+    local slider = CreateFrame("Slider", name, content, "OptionsSliderTemplate")
     -- Room above for the title, which the template puts over the bar.
     Place(slider, 6, 32)
     slider:SetWidth(300)
@@ -219,7 +240,7 @@ ns.DurationSlider = AddSlider("PetAutocastCheckDurationSlider", "duration", 1, 3
 ns.ScaleSlider = AddSlider("PetAutocastCheckScaleSlider", "scale", 0.3, 3, 0.05, scaleTitle)
 
 -- The sound: three radio buttons under a label, one per mode.
-local soundLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+local soundLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 -- Below the slider's own low/high labels.
 Place(soundLabel, 0, 28)
 soundLabel:SetText(L.OPTION_SOUND)
@@ -232,7 +253,7 @@ for _, choice in ipairs({
 }) do
     ---@type PetAutocastCheckSoundMode
     local mode = choice[1]
-    local radio = CreateFrame("CheckButton", nil, panel, "UIRadioButtonTemplate")
+    local radio = CreateFrame("CheckButton", nil, content, "UIRadioButtonTemplate")
     Place(radio, 0, 6)
     local label = LabelOf(radio)
     label:SetFontObject("GameFontHighlightSmall")
@@ -257,7 +278,7 @@ end
 ns.DebugBox = AddCheckbox("debug", L.OPTION_DEBUG, L.OPTION_DEBUG_NOTE)
 
 ---@type UIPanelButtonTemplate
-ns.TestButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+ns.TestButton = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
 ns.TestButton:SetSize(160, 24)
 ns.TestButton:SetText(L.OPTION_TEST)
 ns.TestButton:SetScript("OnClick", function()

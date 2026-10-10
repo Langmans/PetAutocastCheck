@@ -20,6 +20,17 @@ test("the panel is registered under the addon's name", function()
     eq(client.categories[1].frame, client.ns.OptionsPanel)
 end)
 
+test("everything sits in a scroll frame whose content follows its width", function()
+    local client = NewClient():login()
+    local content = client.ns.OptionsContent
+    eq(client.ns.TestButton.parent, content, "the last control scrolls too")
+    eq(client.ns.KiteBox.parent, content)
+    eq(content.parent.kind, "ScrollFrame")
+    eq(content.parent.parent, client.ns.OptionsPanel)
+    content.parent.scripts.OnSizeChanged(content.parent, 512)
+    eq(content.width, 512)
+end)
+
 test("the about line comes from the .toc, through either metadata API", function()
     for _, old in ipairs({ false, true }) do
         local client = NewClient({ noAddOnsAPI = old })
