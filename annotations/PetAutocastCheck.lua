@@ -15,6 +15,16 @@
 ---@field debug boolean trace the checks in chat (/pac debug)
 ---@field pos [string, string, number, number]? point, relativePoint, x, y of a dragged toast
 
+---This character's saved data, ns.char (PetAutocastCheckCharDB).
+---@class PetAutocastCheckCharSettings
+---@field macrosMade boolean whether the macros were made (or offered) once for this character
+
+---One macro the addon makes (Macro.lua).
+---@class PetAutocastCheckMacro
+---@field name string
+---@field icon number|string
+---@field body string
+
 ---What plays with the toast: the pet's own call, as when it is sent to attack (the raid warning
 ---for a family without one), always the raid warning, or nothing.
 ---@alias PetAutocastCheckSoundMode "family"|"warning"|"off"

@@ -1,10 +1,11 @@
 ## Interface: 16001
 ## Title: PetAutocastCheck
 ## Category: Hunter
-## Notes: A toast when your hunter pet's Growl or Cower is on autocast when it should not be. Kite mode wants Cower on.
+## Notes: A toast when your hunter pet's Growl or Cower autocast does not fit what you do: solo, dungeon, kite or tank.
 ## Author: Langmans
 ## Version: 1.0.0
 ## SavedVariables: PetAutocastCheckDB
+## SavedVariablesPerCharacter: PetAutocastCheckCharDB
 ## IconTexture: Interface\Icons\Ability_Physical_Taunt
 ## X-License: MIT
 ## X-Website: https://github.com/Langmans/PetAutocastCheck
@@ -19,5 +20,6 @@ Locale.lua
 Core.lua
 Toast.lua
 Check.lua
+Macro.lua
 Commands.lua
 Options.lua

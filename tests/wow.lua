@@ -12,16 +12,18 @@ local SPELLS = {
         [17253] = { "Bite", 132278 },
         [16828] = { "Claw", 132140 },
         [4187] = { "Great Stamina", 136112 },
+        [20736] = { "Distracting Shot", 135736 },
     },
     deDE = {
         [2649] = { "Knurren", 132270 },
         [14916] = { "Knurren", 132270 },
         [1742] = { "Ducken", 132118 },
         [17253] = { "Biss", 132278 },
+        [20736] = { "Ablenkender Schuss", 135736 },
     },
 }
 
----@param opts {locale: string?, class: string?, savedDB: table?, oldSpellAPI: boolean?, noSpellAPI: boolean?, noTextureAPI: boolean?, noPetBarAPI: boolean?, oldSpellBookAPI: boolean?, noSpellBookAPI: boolean?, noPetSpellCount: boolean?, noMasks: boolean?, oldCheckButton: boolean?, oldSlider: boolean?, metadata: table?, noAddOnsAPI: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedChar: table?, noMacroConsts: boolean?, oldSpellAPI: boolean?, noSpellAPI: boolean?, noTextureAPI: boolean?, noPetBarAPI: boolean?, oldSpellBookAPI: boolean?, noSpellBookAPI: boolean?, noPetSpellCount: boolean?, noMasks: boolean?, oldCheckButton: boolean?, oldSlider: boolean?, metadata: table?, noAddOnsAPI: boolean?}?
 function NewClient(opts)
     opts = opts or {}
     -- opts.locale: the client's language. Spell names exist here for enUS and deDE; any other
@@ -363,8 +365,47 @@ function NewClient(opts)
         end,
     }
 
+    -- The macros: client.macros (account-wide) and client.charMacros (this character's), each a
+    -- list of { name, icon, body }. Indexes run as in the client: account macros from 1, character
+    -- macros from MAX_ACCOUNT + 1. opts.noMacroConsts: a client without Constants.MacroConsts,
+    -- where the addon's own limits (120 account, 18 character) apply.
+    client.macros, client.charMacros = {}, {}
+    local MAX_ACCOUNT, MAX_CHARACTER = 120, opts.noMacroConsts and 18 or 30
+    Constants = not opts.noMacroConsts
+            and { MacroConsts = { MAX_ACCOUNT_MACROS = MAX_ACCOUNT, MAX_CHARACTER_MACROS = MAX_CHARACTER } }
+        or nil
+    function GetMacroIndexByName(name)
+        for i, macro in ipairs(client.macros) do
+            if macro.name == name then return i end
+        end
+        for i, macro in ipairs(client.charMacros) do
+            if macro.name == name then return MAX_ACCOUNT + i end
+        end
+        return 0
+    end
+    function GetNumMacros()
+        return #client.macros, #client.charMacros
+    end
+    function CreateMacro(name, icon, body, perCharacter)
+        assert(not client.inCombat, "macros are not made in combat")
+        local list = perCharacter and client.charMacros or client.macros
+        assert(#list < (perCharacter and MAX_CHARACTER or MAX_ACCOUNT), "no free macro slot")
+        list[#list + 1] = { name = name, icon = icon, body = body }
+        return perCharacter and MAX_ACCOUNT + #list or #list
+    end
+
+    ---The macro of that name, this character's or the account's, or nil.
+    function client:macro(name)
+        for _, list in ipairs({ self.charMacros, self.macros }) do
+            for _, macro in ipairs(list) do
+                if macro.name == name then return macro end
+            end
+        end
+    end
+
     SlashCmdList = {}
     PetAutocastCheckDB = opts.savedDB
+    PetAutocastCheckCharDB = opts.savedChar
 
     local ns = {}
     for _, file in ipairs(TOC_FILES) do
@@ -465,6 +506,10 @@ end
 
 function Saved()
     return PetAutocastCheckDB
+end
+
+function SavedChar()
+    return PetAutocastCheckCharDB
 end
 
 GROWL, COWER = 2649, 1742

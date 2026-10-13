@@ -47,6 +47,12 @@ ns.Locales.esES = {
         DEBUG_ON = "Depuración activada.",
         DEBUG_OFF = "Depuración desactivada.",
         OPTIONS_AFTER_COMBAT = "En combate: las opciones se abren cuando termine el combate.",
+        MACROS_MADE = "Macros %s creadas para este personaje: arrástralas desde la ventana de macros (/macro) "
+            .. "a una barra de acción.",
+        MACROS_MADE_ACCOUNT = "%s creada entre las macros de la cuenta, porque las de este personaje están llenas.",
+        MACROS_FULL = "No hay sitio para %s: las macros del personaje y de la cuenta están llenas.",
+        MACROS_THERE = "Las macros PACKite, PACKiteOff y PACTank ya existen.",
+        MACROS_COMBAT = "No se pueden crear macros en combate; inténtalo después del combate.",
 
         BINDING_KITE = "Activar o desactivar el modo kite",
         BINDING_TANK = "Activar o desactivar el modo tanque",
@@ -85,6 +91,7 @@ ns.Locales.esES = {
         OPTION_DURATION = "El aviso dura %d segundos",
         OPTION_SCALE = "Tamaño del aviso: %.2f",
         OPTION_TEST = "Mostrar un aviso",
+        OPTION_MACROS = "Crear las macros",
     },
 }
 

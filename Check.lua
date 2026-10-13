@@ -228,6 +228,7 @@ function frame:ADDON_LOADED(name)
     ---@type boolean
     ns.isHunter = class == "HUNTER"
     if not ns.isHunter then return end
+    ns.StartMacros()
     for _, event in ipairs({
         "PET_BAR_UPDATE",
         "UNIT_PET",

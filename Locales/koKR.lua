@@ -43,6 +43,11 @@ ns.Locales.koKR = {
         DEBUG_ON = "디버그 켜짐.",
         DEBUG_OFF = "디버그 꺼짐.",
         OPTIONS_AFTER_COMBAT = "전투 중: 전투가 끝나면 설정이 열립니다.",
+        MACROS_MADE = "이 캐릭터용 매크로 %s 을(를) 만들었습니다: 매크로 창(/macro)에서 행동 단축바로 끌어다 놓으세요.",
+        MACROS_MADE_ACCOUNT = "이 캐릭터의 매크로가 가득 차서 %s 을(를) 계정 공용 매크로에 만들었습니다.",
+        MACROS_FULL = "%s 을(를) 만들 자리가 없습니다: 캐릭터 매크로와 계정 공용 매크로가 모두 가득 찼습니다.",
+        MACROS_THERE = "PACKite, PACKiteOff, PACTank 매크로가 이미 있습니다.",
+        MACROS_COMBAT = "전투 중에는 매크로를 만들 수 없습니다. 전투가 끝난 뒤 다시 시도하세요.",
 
         BINDING_KITE = "카이팅 모드 전환",
         BINDING_TANK = "방어 모드 전환",
@@ -81,5 +86,6 @@ ns.Locales.koKR = {
         OPTION_DURATION = "알림 표시 시간: %d초",
         OPTION_SCALE = "알림 크기: %.2f",
         OPTION_TEST = "알림 보기",
+        OPTION_MACROS = "매크로 만들기",
     },
 }

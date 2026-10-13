@@ -3,9 +3,10 @@ local _, ns = ...
 -- Shared helpers and the saved settings. Loaded after Locale.lua (ns.Print needs ns.L) and before
 -- every module that uses them.
 --
--- Globals this file writes: PetAutocastCheckDB, the SavedVariables from the .toc. The WoW Lua
--- LS only knows it when it reads the .toc, so .wowluarc.json lists it under globals.write as
--- well. The types of the settings are in annotations\PetAutocastCheck.lua.
+-- Globals this file writes: PetAutocastCheckDB and PetAutocastCheckCharDB, the SavedVariables
+-- from the .toc. The WoW Lua LS only knows them when it reads the .toc, so .wowluarc.json lists
+-- them under globals.write as well. The types of the settings are in
+-- annotations\PetAutocastCheck.lua.
 
 -- Saved account-wide. The saved file keeps only what the player changed: ns.db reads a missing
 -- value from here through a metatable, and StripDefaults removes values equal to their default
@@ -34,6 +35,11 @@ ns.DEFAULTS = {
 ---ADDON_LOADED. Nothing writes to them before then (no command or event runs that early).
 ---@type PetAutocastCheckSettings
 ns.db = ns.DEFAULTS
+
+---Saved per character: whether the macros were made once already (Macro.lua). Filled on
+---ADDON_LOADED.
+---@type PetAutocastCheckCharSettings
+ns.char = { macrosMade = false }
 
 ---Whether this character is a hunter; set on ADDON_LOADED.
 ns.isHunter = false
@@ -86,8 +92,8 @@ local function cleanPos(saved)
     return { point, relativePoint, x, y }
 end
 
----Creates or repairs the saved settings and makes them ns.db. Called on ADDON_LOADED, when the
----client has filled in the saved table.
+---Creates or repairs the saved settings and makes them ns.db, and this character's data ns.char.
+---Called on ADDON_LOADED, when the client has filled in the saved tables.
 function ns.LoadSettings()
     if type(PetAutocastCheckDB) ~= "table" then PetAutocastCheckDB = {} end
     ---@type PetAutocastCheckSettings
@@ -107,6 +113,12 @@ function ns.LoadSettings()
     db.pos = cleanPos(db.pos)
     ---@type PetAutocastCheckSettings
     ns.db = db
+
+    if type(PetAutocastCheckCharDB) ~= "table" then PetAutocastCheckCharDB = {} end
+    ---@type PetAutocastCheckCharSettings
+    local char = PetAutocastCheckCharDB
+    char.macrosMade = char.macrosMade == true
+    ns.char = char
 end
 
 ---Removes the settings that equal their default, so the saved file keeps only what the player

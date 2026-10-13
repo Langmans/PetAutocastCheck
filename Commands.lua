@@ -17,6 +17,7 @@ local COMMAND_LIST = table.concat({
     "/pac cower on|off",
     "/pac remind on|off",
     "/pac test [growl|cower|kite|tank]",
+    "/pac macros",
     "/pac duration <seconds>",
     "/pac scale <0.3-3>",
     "/pac sound family|warning|off",
@@ -178,6 +179,12 @@ function Commands.test(rest)
     info.key = "test:" .. test[1]
     ns.ShowToast(info)
 end
+
+---/pac macros: makes the macros that are missing (Macro.lua), outside combat.
+function Commands.macros()
+    if not ns.CreateMacros(true) then Print(L.MACROS_COMBAT) end
+end
+Commands.macro = Commands.macros
 
 ---/pac sound family|warning|off
 function Commands.sound(rest)

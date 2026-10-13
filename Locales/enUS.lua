@@ -55,6 +55,13 @@ ns.Locales.enUS = {
         DEBUG_ON = "Debug on.",
         DEBUG_OFF = "Debug off.",
         OPTIONS_AFTER_COMBAT = "In combat: the options open when combat ends.",
+        -- The macros (Macro.lua). %s is a list of macro names.
+        MACROS_MADE = "Made the macros %s for this character: drag them from the macro window (/macro) "
+            .. "onto an action bar.",
+        MACROS_MADE_ACCOUNT = "Made %s among the account-wide macros, since this character's are full.",
+        MACROS_FULL = "No room for %s: your character and account-wide macros are both full.",
+        MACROS_THERE = "The macros PACKite, PACKiteOff and PACTank are there already.",
+        MACROS_COMBAT = "Macros cannot be made in combat; try again after the fight.",
 
         -- Esc > Options > Keybindings.
         BINDING_KITE = "Toggle kite mode",
@@ -96,5 +103,6 @@ ns.Locales.enUS = {
         OPTION_DURATION = "Toast stays for %d seconds",
         OPTION_SCALE = "Toast size: %.2f",
         OPTION_TEST = "Show a toast",
+        OPTION_MACROS = "Make the macros",
     },
 }

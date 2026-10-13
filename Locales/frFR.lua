@@ -46,6 +46,12 @@ ns.Locales.frFR = {
         DEBUG_ON = "Débogage activé.",
         DEBUG_OFF = "Débogage désactivé.",
         OPTIONS_AFTER_COMBAT = "En combat : les options s'ouvriront à la fin du combat.",
+        MACROS_MADE = "Macros %s créées pour ce personnage : faites-les glisser de la fenêtre des macros "
+            .. "(/macro) vers une barre d'action.",
+        MACROS_MADE_ACCOUNT = "%s créée parmi les macros du compte, car celles de ce personnage sont pleines.",
+        MACROS_FULL = "Pas de place pour %s : les macros du personnage et du compte sont pleines.",
+        MACROS_THERE = "Les macros PACKite, PACKiteOff et PACTank existent déjà.",
+        MACROS_COMBAT = "Impossible de créer des macros en combat ; réessayez après le combat.",
 
         BINDING_KITE = "Activer ou désactiver le mode kite",
         BINDING_TANK = "Activer ou désactiver le mode tank",
@@ -84,5 +90,6 @@ ns.Locales.frFR = {
         OPTION_DURATION = "L'alerte reste %d secondes",
         OPTION_SCALE = "Taille de l'alerte : %.2f",
         OPTION_TEST = "Montrer une alerte",
+        OPTION_MACROS = "Créer les macros",
     },
 }

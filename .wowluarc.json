@@ -5,6 +5,7 @@
     "globals": {
         "write": [
             "PetAutocastCheckDB",
+            "PetAutocastCheckCharDB",
             "SLASH_PETAUTOCASTCHECK1",
             "SLASH_PETAUTOCASTCHECK2",
             "BINDING_HEADER_PETAUTOCASTCHECK",

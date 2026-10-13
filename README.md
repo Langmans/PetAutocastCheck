@@ -49,11 +49,17 @@ again (switch that off with `/pac remind off`). `/pac growl off` or
 - It only watches on hunters. On other characters the addon stays loaded but
   idle; `/pac` and the panel still work there.
 
-### Kite and tank mode in a macro
+### Macros
 
-`/pac kite` toggles kite mode; `/pac kite on` and `/pac kite off` set it.
-`/pac tank` works the same way. Put it in the macro you kite with, so the
-mode follows what you are doing:
+The first time a hunter logs in with the addon, it makes three macros for
+that character (in the macro window, `/macro`; drag them onto an action
+bar):
+
+| Macro | Does |
+| --- | --- |
+| **PACKite** | casts Distracting Shot and switches kite mode on |
+| **PACKiteOff** | switches kite mode off: back to solo or dungeon |
+| **PACTank** | switches tank mode on or off |
 
 ```
 #showtooltip Distracting Shot
@@ -61,9 +67,15 @@ mode follows what you are doing:
 /cast Distracting Shot
 ```
 
-Pressing it again while the mode is already on says nothing, so a macro you
-press over and over does not fill your chat. Both have a key binding, under
-Esc > Options > Keybindings > AddOns > Pet Autocast Check.
+They are made once per character. Delete one and it stays gone;
+`/pac macros` (or **Make the macros** in the panel) makes the missing ones
+again. When the character's macros are full they go among the account-wide
+ones, and a macro you already have by that name is left as it is.
+
+`/pac kite on` pressed again while kite mode is on says nothing, so a macro
+you press over and over does not fill your chat. Kite and tank mode also
+have a key binding each, under Esc > Options > Keybindings > AddOns > Pet
+Autocast Check.
 
 ## Install
 
@@ -91,9 +103,11 @@ Autocast Check. It shows the version and website, and has:
   stays and how big it is.
 - **Sound**: your pet's call, the raid warning, or none.
 - **Debug trace**: print in chat every problem found and solved.
-- **Show a toast**: the same as `/pac test`.
+- **Show a toast** and **Make the macros**: the same as `/pac test` and
+  `/pac macros`.
 
-The settings are saved for the whole account. The same settings are chat
+The settings are saved for the whole account; only whether the macros were
+made is kept per character. The same settings are chat
 commands too (`/petautocastcheck` works as well):
 
 - `/pac` shows the mode in force and the current settings, plus the list of
@@ -105,6 +119,8 @@ commands too (`/petautocastcheck` works as well):
 - `/pac test [growl|cower|kite|tank]` shows a toast (Growl on in a dungeon,
   Cower on solo, Cower off in kite mode, Growl off in tank mode), whatever
   your pet says. Nothing else happens.
+- `/pac macros` makes the PACKite, PACKiteOff and PACTank macros that are
+  missing (not in combat).
 - `/pac duration <seconds>` sets how long the toast stays (default 6).
 - `/pac scale <0.3-3>` sets its size (default 1).
 - `/pac sound family` plays your pet's call (the default; `/pac sound on` does
@@ -157,6 +173,9 @@ In `.toc` order; all share the addon namespace `ns`.
 - `Check.lua` — reading the pet's spellbook and pet bar (`ns.PetAutocasts`), the rules
   (`PROBLEMS`, `ns.ProblemToast`, `ns.Check`) and the event frame (one method
   per event).
+- `Macro.lua` — the three macros (`ns.Macros`, `ns.CreateMacros`), made once
+  per character on the first `UPDATE_MACROS` outside combat (`ns.StartMacros`,
+  for hunters only).
 - `Commands.lua` — `/pac`: one function per subcommand in a `Commands` table,
   looked up by the slash handler like the event frame looks up its event
   methods; anything unknown shows the status line. Also the key bindings'
@@ -180,6 +199,8 @@ Only values that differ from their default are kept: `ns.db` reads the rest
 from the defaults through a metatable, a broken value is dropped on load so
 its default shows through, numbers are put back in range, and
 `ns.StripDefaults` removes values equal to their default on `PLAYER_LOGOUT`.
+Per character, `PetAutocastCheckCharDB` holds `macrosMade`: true once the
+macros were made, or offered with no room for them.
 
 ### How it works
 
@@ -222,6 +243,14 @@ its default shows through, numbers are put back in range, and
 - One problem has at most one toast, up or waiting. `/pac test` gives its
   toasts their own key (`test:growlOn`), so they never stand in for a real
   one.
+- The macros are made the way PetCareButton makes its PetCare macro:
+  `CreateMacro` per character while `GetNumMacros` leaves room under
+  `Constants.MacroConsts.MAX_CHARACTER_MACROS` (18 without it), else
+  account-wide under `MAX_ACCOUNT_MACROS` (120). A name `GetMacroIndexByName`
+  finds is skipped. Spell names in PACKite come from the client by ID
+  (Distracting Shot 20736), PACKiteOff and PACTank take Cower's and Growl's
+  icons. `UPDATE_MACROS` in combat waits for `PLAYER_REGEN_ENABLED`; once
+  done, the event is no longer listened to.
 - The sound is the aggro sound of the pet's family, by CreatureFamily ID from
   `UnitCreatureFamily`, as a FileDataID for `PlaySoundFile`: the same table
   as Pet Ability Learned's, from the wago.tools community listfile. Families

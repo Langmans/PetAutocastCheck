@@ -11,6 +11,9 @@
   group without a tank): toggle with `/pac kite` and `/pac tank`, set with
   `on|off` (quiet when nothing changes, so it fits a Distracting Shot macro),
   with a key binding each or in the panel.
+- Three macros made once per character the first time you log in: PACKite
+  (Distracting Shot with kite mode on), PACKiteOff and PACTank. `/pac macros`
+  makes missing ones again.
 - Whatever is still wrong toasts again when combat starts
   (`/pac remind on|off`).
 - The toast plays your pet's call, the sound it makes when you send it to

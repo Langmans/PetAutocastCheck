@@ -45,6 +45,12 @@ ns.Locales.deDE = {
         DEBUG_ON = "Debug an.",
         DEBUG_OFF = "Debug aus.",
         OPTIONS_AFTER_COMBAT = "Im Kampf: die Optionen öffnen sich, wenn der Kampf endet.",
+        MACROS_MADE = "Makros %s für diesen Charakter erstellt: zieh sie aus dem Makrofenster (/macro) "
+            .. "auf eine Aktionsleiste.",
+        MACROS_MADE_ACCOUNT = "%s bei den accountweiten Makros erstellt, da die dieses Charakters voll sind.",
+        MACROS_FULL = "Kein Platz für %s: deine charakterspezifischen und accountweiten Makros sind beide voll.",
+        MACROS_THERE = "Die Makros PACKite, PACKiteOff und PACTank gibt es schon.",
+        MACROS_COMBAT = "Im Kampf lassen sich keine Makros erstellen; versuch es nach dem Kampf.",
 
         BINDING_KITE = "Kite-Modus umschalten",
         BINDING_TANK = "Tank-Modus umschalten",
@@ -83,5 +89,6 @@ ns.Locales.deDE = {
         OPTION_DURATION = "Anzeige bleibt %d Sekunden",
         OPTION_SCALE = "Anzeigegröße: %.2f",
         OPTION_TEST = "Anzeige zeigen",
+        OPTION_MACROS = "Makros erstellen",
     },
 }

@@ -299,14 +299,27 @@ ns.SoundButtons = AddRadios("sound", L.OPTION_SOUND, 28, {
 ---@type CheckButton
 ns.DebugBox = AddCheckbox("debug", L.OPTION_DEBUG, L.OPTION_DEBUG_NOTE)
 
+---A button that runs a /pac subcommand, not yet placed.
+---@param label string
+---@param command string what follows /pac
+---@return UIPanelButtonTemplate
+local function NewButton(label, command)
+    local button = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    button:SetSize(160, 24)
+    button:SetText(label)
+    button:SetScript("OnClick", function()
+        SlashCmdList.PETAUTOCASTCHECK(command)
+    end)
+    return button
+end
+
+-- The two buttons side by side; the second hangs off the first.
 ---@type UIPanelButtonTemplate
-ns.TestButton = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-ns.TestButton:SetSize(160, 24)
-ns.TestButton:SetText(L.OPTION_TEST)
-ns.TestButton:SetScript("OnClick", function()
-    SlashCmdList.PETAUTOCASTCHECK("test")
-end)
+ns.TestButton = NewButton(L.OPTION_TEST, "test")
 Place(ns.TestButton, 0, 16)
+---@type UIPanelButtonTemplate
+ns.MacrosButton = NewButton(L.OPTION_MACROS, "macros")
+ns.MacrosButton:SetPoint("LEFT", ns.TestButton, "RIGHT", 12, 0)
 
 -- Fills every control. The settings window calls a canvas frame's OnRefresh each time it shows
 -- it; OnShow alone is not enough, since showing a frame that is already shown (the canvas was up
