@@ -3,7 +3,7 @@ local ADDON_NAME, ns = ...
 -- The panel in the game's settings (Esc > Options > AddOns, or /pac config). From top to bottom:
 --   - the version, author and license from the .toc, and the website in a box to copy it from (a
 --     link in the game cannot open a browser) when the .toc names one, and what the addon does;
---   - the settings: checkboxes for /pac kite, growl, cower and remind, sliders for /pac duration
+--   - the settings: checkboxes for /pac kite, growl, dungeon, cower and remind, sliders for /pac duration
 --     and /pac scale, the three /pac sound choices, a checkbox for /pac debug, and a button for
 --     /pac test.
 -- Everything is filled from ns.db every time the panel is shown, so a change made with /pac in
@@ -21,7 +21,7 @@ ns.OptionsPanel = panel
 -- size the settings window decides; CONTENT_WIDTH only holds until then.
 -- UIPanelScrollFrameTemplate puts its scroll bar just outside the frame's right edge, hence the
 -- room on the right.
-local CONTENT_WIDTH, CONTENT_HEIGHT = 600, 780
+local CONTENT_WIDTH, CONTENT_HEIGHT = 600, 830
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
 scroll:SetPoint("BOTTOMRIGHT", -28, 4)
@@ -143,7 +143,7 @@ local function LabelOf(button)
 end
 
 ---A checkbox for one boolean setting, with a line of explanation under it.
----@param key "kite"|"growl"|"cower"|"remind"|"debug"
+---@param key "kite"|"growl"|"dungeon"|"cower"|"remind"|"debug"
 ---@param label string
 ---@param note string
 ---@return CheckButton
@@ -175,6 +175,8 @@ end
 ns.KiteBox = AddCheckbox("kite", L.OPTION_KITE, L.OPTION_KITE_NOTE)
 ---@type CheckButton
 ns.GrowlBox = AddCheckbox("growl", L.OPTION_GROWL, L.OPTION_GROWL_NOTE)
+---@type CheckButton
+ns.DungeonBox = AddCheckbox("dungeon", L.OPTION_DUNGEON, L.OPTION_DUNGEON_NOTE)
 ---@type CheckButton
 ns.CowerBox = AddCheckbox("cower", L.OPTION_COWER, L.OPTION_COWER_NOTE)
 ---@type CheckButton

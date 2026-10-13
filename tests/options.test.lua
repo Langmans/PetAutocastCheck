@@ -72,6 +72,8 @@ test("the controls show the settings, also after a change made with /pac", funct
     local ns = client.ns
     eq(ns.KiteBox.checked, true)
     eq(ns.GrowlBox.checked, true)
+    eq(ns.DungeonBox.checked, true)
+    eq(ns.DungeonBox.Text.text, "Only in dungeons and raids")
     eq(ns.DurationSlider.value, 9)
     eq(ns.DurationSlider.Text.text, "Toast stays for 9 seconds")
     eq(ns.ScaleSlider.Text.text, "Toast size: 1.25")

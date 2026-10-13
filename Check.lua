@@ -3,6 +3,8 @@ local ADDON_NAME, ns = ...
 -- What counts as wrong, from the pet bar's autocast state:
 --   - growl:    Growl on autocast while in a party or raid. There the tank holds threat, and a
 --               pet that taunts on its own pulls mobs off them. Solo, Growl on is what you want.
+--               With the dungeon setting (the default) only inside a dungeon or raid instance:
+--               a group questing in the open world usually has no tank to pull mobs off.
 --   - cower:    Cower on autocast outside kite mode. It throws away the threat the pet holds.
 --   - cowerOff: Cower off autocast in kite mode. While the hunter kites, the pet should not keep
 --               the mob's attention, so Cower belongs on.
@@ -110,6 +112,20 @@ function ns.ProblemToast(key, name, icon)
     }
 end
 
+---Whether the player is inside a dungeon or raid instance (not a battleground or arena).
+---@return boolean
+local function InDungeon()
+    local inInstance, kind = IsInInstance()
+    return inInstance == true and (kind == "party" or kind == "raid")
+end
+
+---Whether Growl on autocast is wrong here: in a group, and with the dungeon setting in a dungeon
+---or raid as well.
+---@return boolean
+local function GrowlWrongHere()
+    return IsInGroup() and (not ns.db.dungeon or InDungeon())
+end
+
 ---What is wrong right now, by problem key.
 ---@return table<string, PetAutocastCheckToastInfo>
 local function Problems()
@@ -119,7 +135,7 @@ local function Problems()
     local states = ns.PetAutocasts()
     local growlName = ns.SpellInfo(GROWL)
     local growl = growlName and states[growlName]
-    if growl and growl.on and db.growl and IsInGroup() then
+    if growl and growl.on and db.growl and GrowlWrongHere() then
         found.growl = ns.ProblemToast("growl", growlName, growl.icon)
     end
     local cowerName = ns.SpellInfo(COWER)
@@ -190,7 +206,13 @@ function frame:ADDON_LOADED(name)
     ---@type boolean
     ns.isHunter = class == "HUNTER"
     if not ns.isHunter then return end
-    for _, event in ipairs({ "PET_BAR_UPDATE", "UNIT_PET", "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_DISABLED" }) do
+    for _, event in ipairs({
+        "PET_BAR_UPDATE",
+        "UNIT_PET",
+        "GROUP_ROSTER_UPDATE",
+        "PLAYER_ENTERING_WORLD",
+        "PLAYER_REGEN_DISABLED",
+    }) do
         self:RegisterEvent(event)
     end
 end
@@ -205,6 +227,9 @@ frame.PET_BAR_UPDATE = ScheduleCheck
 
 -- Joined or left a group.
 frame.GROUP_ROSTER_UPDATE = ScheduleCheck
+
+-- Into or out of a dungeon: every instance has a loading screen, which ends with this event.
+frame.PLAYER_ENTERING_WORLD = ScheduleCheck
 
 -- A pet summoned, tamed or dismissed.
 ---@param unit string

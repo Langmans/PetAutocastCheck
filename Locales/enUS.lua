@@ -18,10 +18,10 @@ ns.Locales.enUS = {
         HINT_TURN_OFF = "Right-click it on the pet bar or in your pet's spellbook to turn autocast off.",
         HINT_TURN_ON = "Right-click it on the pet bar or in your pet's spellbook to turn autocast on.",
 
-        -- /pac. STATUS: kite mode, Growl, Cower and the combat reminder on/off, the toast's
-        -- duration in seconds and scale, sound (a SOUND_NAME_* or STATUS_OFF), debug on/off, the
-        -- command list.
-        STATUS = "Kite mode %s. Watching Growl %s, Cower %s, reminder in combat %s. "
+        -- /pac. STATUS: kite mode, Growl, Growl only in dungeons, Cower and the combat reminder
+        -- on/off, the toast's duration in seconds and scale, sound (a SOUND_NAME_* or STATUS_OFF),
+        -- debug on/off, the command list.
+        STATUS = "Kite mode %s. Watching Growl %s (only in dungeons %s), Cower %s, reminder in combat %s. "
             .. "Toast for %d s at scale %.2f, sound %s, debug %s. Commands: %s",
         STATUS_ON = "on",
         STATUS_OFF = "off",
@@ -32,6 +32,8 @@ ns.Locales.enUS = {
         KITE_OFF = "Kite mode off: Cower belongs off autocast.",
         GROWL_ON = "Growl on autocast in a group gets a toast.",
         GROWL_OFF = "Growl is not watched.",
+        DUNGEON_ON = "Growl is only watched in a dungeon or raid.",
+        DUNGEON_OFF = "Growl is watched in every group, in the open world too.",
         COWER_ON = "Cower on autocast outside kite mode gets a toast.",
         COWER_OFF = "Cower is not watched outside kite mode.",
         REMIND_ON = "What is still wrong toasts again when combat starts.",
@@ -66,6 +68,9 @@ ns.Locales.enUS = {
         OPTION_GROWL = "Watch Growl",
         OPTION_GROWL_NOTE = "A toast when Growl is on autocast while you are in a party or raid. "
             .. "Same as /pac growl on and off.",
+        OPTION_DUNGEON = "Only in dungeons and raids",
+        OPTION_DUNGEON_NOTE = "Watch Growl only inside a dungeon or raid, where a tank holds the threat; "
+            .. "a group questing outside is left alone. Same as /pac dungeon on and off.",
         OPTION_COWER = "Watch Cower",
         OPTION_COWER_NOTE = "A toast when Cower is on autocast outside kite mode. Same as /pac cower on and off.",
         OPTION_REMIND = "Remind me when combat starts",

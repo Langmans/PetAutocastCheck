@@ -12,7 +12,7 @@ ns.Locales.deDE = {
         HINT_TURN_ON = "Rechtsklick darauf in der Begleiterleiste oder im Zauberbuch deines Begleiters "
             .. "schaltet das automatische Wirken ein.",
 
-        STATUS = "Kite-Modus %s. Überwacht: Knurren %s, Ducken %s, Erinnerung im Kampf %s. "
+        STATUS = "Kite-Modus %s. Überwacht: Knurren %s (nur in Dungeons %s), Ducken %s, Erinnerung im Kampf %s. "
             .. "Anzeige für %d s mit Größe %.2f, Ton %s, Debug %s. Befehle: %s",
         STATUS_ON = "an",
         STATUS_OFF = "aus",
@@ -21,6 +21,8 @@ ns.Locales.deDE = {
         KITE_OFF = "Kite-Modus aus: Ducken gehört nicht auf automatisch.",
         GROWL_ON = "Knurren auf automatisch in einer Gruppe wird angezeigt.",
         GROWL_OFF = "Knurren wird nicht überwacht.",
+        DUNGEON_ON = "Knurren wird nur in Dungeons und Schlachtzügen überwacht.",
+        DUNGEON_OFF = "Knurren wird in jeder Gruppe überwacht, auch in der offenen Welt.",
         COWER_ON = "Ducken auf automatisch außerhalb des Kite-Modus wird angezeigt.",
         COWER_OFF = "Ducken wird außerhalb des Kite-Modus nicht überwacht.",
         REMIND_ON = "Was noch falsch ist, wird bei Kampfbeginn erneut angezeigt.",
@@ -53,6 +55,9 @@ ns.Locales.deDE = {
         OPTION_GROWL = "Knurren überwachen",
         OPTION_GROWL_NOTE = "Eine Anzeige, wenn Knurren in einer Gruppe oder einem Schlachtzug automatisch "
             .. "gewirkt wird. Wie /pac growl on und off.",
+        OPTION_DUNGEON = "Nur in Dungeons und Schlachtzügen",
+        OPTION_DUNGEON_NOTE = "Knurren nur in einem Dungeon oder Schlachtzug überwachen, wo ein Tank die "
+            .. "Bedrohung hält; eine Gruppe beim Questen draußen bleibt unbehelligt. Wie /pac dungeon on und off.",
         OPTION_COWER = "Ducken überwachen",
         OPTION_COWER_NOTE = "Eine Anzeige, wenn Ducken außerhalb des Kite-Modus automatisch gewirkt wird. "
             .. "Wie /pac cower on und off.",

@@ -21,6 +21,7 @@ ns.DEFAULTS = {
     scale = 1, -- /pac scale <0.3-3>
     sound = "family", -- /pac sound family|warning|off
     growl = true, -- /pac growl on|off
+    dungeon = true, -- /pac dungeon on|off
     cower = true, -- /pac cower on|off
     kite = false, -- /pac kite [on|off]
     remind = true, -- /pac remind on|off

@@ -12,7 +12,8 @@ ns.Locales.esES = {
         HINT_TURN_ON = "Haz clic derecho en ella en la barra de mascota o en el libro de hechizos de tu "
             .. "mascota para poner el lanzamiento automático.",
 
-        STATUS = "Modo kite %s. Vigilando Gruñido %s, Encogerse %s, recordatorio en combate %s. "
+        STATUS = "Modo kite %s. Vigilando Gruñido %s (solo en mazmorras %s), Encogerse %s, "
+            .. "recordatorio en combate %s. "
             .. "Aviso durante %d s con tamaño %.2f, sonido %s, depuración %s. Comandos: %s",
         STATUS_ON = "activado",
         STATUS_OFF = "desactivado",
@@ -21,6 +22,8 @@ ns.Locales.esES = {
         KITE_OFF = "Modo kite desactivado: Encogerse no va en lanzamiento automático.",
         GROWL_ON = "Gruñido en lanzamiento automático en un grupo muestra un aviso.",
         GROWL_OFF = "Gruñido no se vigila.",
+        DUNGEON_ON = "Gruñido solo se vigila en mazmorras y bandas.",
+        DUNGEON_OFF = "Gruñido se vigila en cualquier grupo, también en el mundo abierto.",
         COWER_ON = "Encogerse en lanzamiento automático fuera del modo kite muestra un aviso.",
         COWER_OFF = "Encogerse no se vigila fuera del modo kite.",
         REMIND_ON = "Lo que siga mal vuelve a avisarse al empezar el combate.",
@@ -53,6 +56,9 @@ ns.Locales.esES = {
         OPTION_GROWL = "Vigilar Gruñido",
         OPTION_GROWL_NOTE = "Un aviso cuando Gruñido está en lanzamiento automático en un grupo o banda. "
             .. "Igual que /pac growl on y off.",
+        OPTION_DUNGEON = "Solo en mazmorras y bandas",
+        OPTION_DUNGEON_NOTE = "Vigilar Gruñido solo dentro de una mazmorra o banda, donde un tanque mantiene "
+            .. "la amenaza; un grupo de misiones fuera no se toca. Igual que /pac dungeon on y off.",
         OPTION_COWER = "Vigilar Encogerse",
         OPTION_COWER_NOTE = "Un aviso cuando Encogerse está en lanzamiento automático fuera del modo kite. "
             .. "Igual que /pac cower on y off.",

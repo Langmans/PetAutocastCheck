@@ -2,7 +2,11 @@
 
 test("/pac alone, or anything unknown, shows the status and the commands", function()
     local client = NewClient():login():slash("")
-    ok(client:printedContains("Kite mode off. Watching Growl on, Cower on, reminder in combat on."))
+    ok(
+        client:printedContains(
+            "Kite mode off. Watching Growl on (only in dungeons on), Cower on, reminder in combat on."
+        )
+    )
     ok(client:printedContains("Toast for 6 s at scale 1.00, sound pet's call, debug off."))
     ok(client:printedContains("/pac kite [on|off]"))
     client.printed = {}
@@ -64,6 +68,22 @@ test("/pac growl, cower and remind take on and off", function()
     client.printed = {}
     client:slash("growl maybe")
     ok(client:printedContains("Commands:"), "anything else shows the status")
+end)
+
+test("/pac dungeon off toasts a group outside at once; on takes it away", function()
+    local client = NewClient()
+    client.instance = "none"
+    client:login():group(true)
+    eq(client.toast.shown, false)
+    client:slash("dungeon off")
+    eq(Saved().dungeon, false)
+    ok(client:printedContains("Growl is watched in every group, in the open world too."))
+    eq(client:toastTitle(), "Growl is on autocast")
+    client:slash("dungeon on")
+    eq(Saved().dungeon, true)
+    ok(client:printedContains("Growl is only watched in a dungeon or raid."))
+    client:animate(1)
+    eq(client.toast.shown, false)
 end)
 
 test("/pac growl on in a group toasts at once", function()

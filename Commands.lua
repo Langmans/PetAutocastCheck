@@ -13,6 +13,7 @@ local L, Print = ns.L, ns.Print
 local COMMAND_LIST = table.concat({
     "/pac kite [on|off]",
     "/pac growl on|off",
+    "/pac dungeon on|off",
     "/pac cower on|off",
     "/pac remind on|off",
     "/pac test [growl|cower|kite]",
@@ -62,6 +63,7 @@ local function status()
             "STATUS",
             onOffName(db.kite),
             onOffName(db.growl),
+            onOffName(db.dungeon),
             onOffName(db.cower),
             onOffName(db.remind),
             db.duration,
@@ -89,6 +91,7 @@ local TEST_KEYS = { growl = "growl", cower = "cower", kite = "cowerOff" }
 ---@type table<string, [string, string]>
 local SWITCHES = {
     growl = { "GROWL_ON", "GROWL_OFF" },
+    dungeon = { "DUNGEON_ON", "DUNGEON_OFF" },
     cower = { "COWER_ON", "COWER_OFF" },
     remind = { "REMIND_ON", "REMIND_OFF" },
 }
@@ -97,7 +100,7 @@ local SWITCHES = {
 local Commands = {}
 
 ---Sets one of SWITCHES from "on" or "off" and checks again, since what counts as wrong changed.
----@param key "growl"|"cower"|"remind"
+---@param key "growl"|"dungeon"|"cower"|"remind"
 ---@param rest string
 local function Switch(key, rest)
     local on = onOff(rest)
@@ -115,6 +118,11 @@ end
 ---/pac growl on|off
 function Commands.growl(rest)
     Switch("growl", rest)
+end
+
+---/pac dungeon on|off: the Growl warning only inside a dungeon or raid.
+function Commands.dungeon(rest)
+    Switch("dungeon", rest)
 end
 
 ---/pac cower on|off

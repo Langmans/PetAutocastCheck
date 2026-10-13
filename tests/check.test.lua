@@ -17,6 +17,47 @@ test("joining a group with Growl on toasts; leaving takes the toast away", funct
     eq(client.toast.shown, false, "faded out at once")
 end)
 
+test("a group outside a dungeon leaves Growl alone by default", function()
+    local client = NewClient()
+    client.instance = "none"
+    client:login():group(true)
+    eq(client.toast.shown, false)
+end)
+
+test("entering a dungeon with the group toasts; leaving it takes the toast away", function()
+    local client = NewClient()
+    client.instance = "none"
+    client:login():group(true)
+    client.instance = "party"
+    client:fire("PLAYER_ENTERING_WORLD"):advance(0.2)
+    eq(client:toastTitle(), "Growl is on autocast")
+    client.instance = "none"
+    client:fire("PLAYER_ENTERING_WORLD"):advance(0.2)
+    client:animate(1)
+    eq(client.toast.shown, false)
+end)
+
+test("a raid counts as a dungeon; a battleground or arena does not", function()
+    for kind, expected in pairs({ raid = true, pvp = false, arena = false }) do
+        local client = NewClient()
+        client.instance = kind
+        client:login():group(true)
+        eq(client.toast.shown, expected, kind)
+    end
+end)
+
+test("alone in a dungeon, Growl on is fine", function()
+    local client = NewClient():login()
+    eq(client.toast.shown, false)
+end)
+
+test("with the dungeon setting off, any group counts, outside too", function()
+    local client = NewClient({ savedDB = { dungeon = false } })
+    client.instance = "none"
+    client:login():group(true)
+    eq(client:toastTitle(), "Growl is on autocast")
+end)
+
 test("turning Growl off in the group takes the toast away; on again toasts again", function()
     local client = NewClient():login():group(true)
     client:autocast(GROWL, false):animate(1)

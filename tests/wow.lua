@@ -71,6 +71,13 @@ function NewClient(opts)
     function IsInGroup()
         return client.inGroup
     end
+    -- client.instance: the instance type the player stands in ("party", "raid", "pvp",
+    -- "arena"), or "none" outside. A dungeon by default, since most tests of the Growl rule
+    -- are about a dungeon group.
+    client.instance = "party"
+    function IsInInstance()
+        return client.instance ~= "none", client.instance
+    end
     -- client.familyID: the pet's CreatureFamily ID (2 = cat by default).
     client.familyID = 2
     function UnitCreatureFamily(unit)
