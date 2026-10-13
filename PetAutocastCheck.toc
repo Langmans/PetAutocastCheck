@@ -1,5 +1,6 @@
 ## Interface: 16001
 ## Title: PetAutocastCheck
+## Category: Hunter
 ## Notes: A toast when your hunter pet's Growl or Cower is on autocast when it should not be. Kite mode wants Cower on.
 ## Author: Langmans
 ## Version: 1.0.0
