@@ -8,11 +8,9 @@
 ---@field duration number whole seconds the toast stays before it fades, from 1 (/pac duration)
 ---@field scale number from 0.3 to 3 (/pac scale)
 ---@field sound PetAutocastCheckSoundMode (/pac sound)
----@field growl boolean warn when Growl is on autocast in a group (/pac growl)
----@field growlDungeon boolean the Growl warning only in a dungeon or raid instance (/pac dungeon growl)
----@field cowerDungeon boolean the Cower warning only in a dungeon or raid instance (/pac dungeon cower); kite mode is not affected
----@field cower boolean warn when Cower is on autocast outside kite mode (/pac cower)
----@field kite boolean kite mode: Cower belongs on autocast, so warn when it is off (/pac kite)
+---@field mode PetAutocastCheckChosenMode chosen by hand, or "auto" (/pac kite, /pac tank)
+---@field growl boolean warn when Growl's autocast does not fit the mode (/pac growl)
+---@field cower boolean warn when Cower's autocast does not fit the mode (/pac cower)
 ---@field remind boolean toast what is still wrong again when combat starts (/pac remind)
 ---@field debug boolean trace the checks in chat (/pac debug)
 ---@field pos [string, string, number, number]? point, relativePoint, x, y of a dragged toast
@@ -21,13 +19,21 @@
 ---for a family without one), always the raid warning, or nothing.
 ---@alias PetAutocastCheckSoundMode "family"|"warning"|"off"
 
+---The mode the player chose: "auto" lets the addon pick solo or dungeon; kite and tank are set
+---by hand and win over that.
+---@alias PetAutocastCheckChosenMode "auto"|"kite"|"tank"
+
+---The mode in force, which says whether Growl and Cower belong on autocast (Check.lua):
+---solo and tank want Growl on and Cower off, dungeon and kite the other way round.
+---@alias PetAutocastCheckMode "solo"|"dungeon"|"kite"|"tank"
+
 ---A value the game hands over without a known type: from a SavedVariables file, an event
 ---argument or an API return.
 ---@alias GameValue string|number|boolean|table|nil
 
 ---What a toast shows (Toast.lua).
 ---@class PetAutocastCheckToastInfo
----@field key string the problem it is about ("growl", "cower", "cowerOff", or "test:" and one of those); one toast per problem
+---@field key string the problem it is about ("growlOn", "growlOff", "cowerOn", "cowerOff", or "test:" and one of those); one toast per problem
 ---@field title string the line over the name, such as "Growl is on autocast"
 ---@field name string? the ability's name
 ---@field icon (number|string)? texture; the taunt icon when nil

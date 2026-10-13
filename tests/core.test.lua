@@ -9,9 +9,9 @@ test("a fresh install saves nothing but works on the defaults", function()
 end)
 
 test("changed settings survive logout; values equal to the default are dropped", function()
-    local client = NewClient({ savedDB = { kite = true, duration = 6 } }):login()
+    local client = NewClient({ savedDB = { mode = "kite", duration = 6 } }):login()
     client:fire("PLAYER_LOGOUT")
-    eq(Saved().kite, true)
+    eq(Saved().mode, "kite")
     eq(rawget(Saved(), "duration"), nil)
 end)
 
@@ -23,10 +23,11 @@ end)
 
 test("broken values fall back to their defaults; numbers are put back in range", function()
     local client = NewClient({
-        savedDB = { kite = "yes", sound = "loud", duration = 0.5, scale = 7, pos = "middle" },
+        savedDB = { growl = "yes", mode = "heal", sound = "loud", duration = 0.5, scale = 7, pos = "middle" },
     }):login()
     local db = client.ns.db
-    eq(db.kite, false)
+    eq(db.growl, true)
+    eq(db.mode, "auto")
     eq(db.sound, "family")
     eq(db.duration, 1)
     eq(db.scale, 3)

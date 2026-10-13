@@ -15,16 +15,17 @@ local _, ns = ...
 ---@type table<string, true>
 ns.SOUND_MODES = { family = true, warning = true, off = true }
 
+---@type table<string, true>
+ns.CHOSEN_MODES = { auto = true, kite = true, tank = true }
+
 ---@type PetAutocastCheckSettings
 ns.DEFAULTS = {
     duration = 6, -- /pac duration <seconds>
     scale = 1, -- /pac scale <0.3-3>
     sound = "family", -- /pac sound family|warning|off
+    mode = "auto", -- /pac kite [on|off], /pac tank [on|off]
     growl = true, -- /pac growl on|off
-    growlDungeon = true, -- /pac dungeon growl on|off
-    cowerDungeon = false, -- /pac dungeon cower on|off
     cower = true, -- /pac cower on|off
-    kite = false, -- /pac kite [on|off]
     remind = true, -- /pac remind on|off
     debug = false, -- /pac debug
 }
@@ -98,6 +99,7 @@ function ns.LoadSettings()
     -- A string that is no sound mode is dropped as well; rawset, since the field may hold only a
     -- mode once loaded, and nil here just lets the default show through.
     if db.sound ~= nil and not ns.SOUND_MODES[db.sound] then rawset(db, "sound", nil) end
+    if db.mode ~= nil and not ns.CHOSEN_MODES[db.mode] then rawset(db, "mode", nil) end
     setmetatable(db, { __index = ns.DEFAULTS })
     -- Numbers are put back in range: whole seconds from 1, a scale from 0.3 to 3.
     db.duration = math.max(1, math.floor(db.duration))

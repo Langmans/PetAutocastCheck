@@ -5,18 +5,18 @@ local _, ns = ...
 -- the subcommand up. Anything it does not know shows the status line with the list of commands.
 -- Settings are read from ns.db, which exists once the addon has loaded (before anyone can type).
 --
--- Globals this file writes, besides the slash command: the key binding's function and the names
--- Esc > Options > Keybindings shows for it (Bindings.xml).
+-- Globals this file writes, besides the slash command: the key bindings' functions and the names
+-- Esc > Options > Keybindings shows for them (Bindings.xml).
 
 local L, Print = ns.L, ns.Print
 
 local COMMAND_LIST = table.concat({
     "/pac kite [on|off]",
+    "/pac tank [on|off]",
     "/pac growl on|off",
-    "/pac dungeon growl|cower on|off",
     "/pac cower on|off",
     "/pac remind on|off",
-    "/pac test [growl|cower|kite]",
+    "/pac test [growl|cower|kite|tank]",
     "/pac duration <seconds>",
     "/pac scale <0.3-3>",
     "/pac sound family|warning|off",
@@ -53,6 +53,10 @@ end
 ---@type table<PetAutocastCheckSoundMode, string>
 local SOUND_NAMES = { family = L.SOUND_NAME_FAMILY, warning = L.SOUND_NAME_WARNING, off = L.STATUS_OFF }
 
+-- How each mode is named in the status line.
+---@type table<PetAutocastCheckMode, string>
+local MODE_NAMES = { solo = L.MODE_SOLO, dungeon = L.MODE_DUNGEON, kite = L.MODE_KITE, tank = L.MODE_TANK }
+
 ---The current settings and the list of commands.
 local function status()
     if not ns.isHunter then Print(L.NOT_HUNTER) end
@@ -61,11 +65,10 @@ local function status()
     Print(
         ns.Format(
             "STATUS",
-            onOffName(db.kite),
+            MODE_NAMES[ns.Mode()],
+            db.mode == "auto" and L.MODE_AUTO or L.MODE_CHOSEN,
             onOffName(db.growl),
-            onOffName(db.growlDungeon),
             onOffName(db.cower),
-            onOffName(db.cowerDungeon),
             onOffName(db.remind),
             db.duration,
             db.scale,
@@ -84,29 +87,32 @@ local SOUND_WORDS = { family = "family", on = "family", warning = "warning", off
 ---@type table<PetAutocastCheckSoundMode, string>
 local SOUND_SET = { family = L.SOUND_FAMILY, warning = L.SOUND_WARNING, off = L.SOUND_OFF }
 
--- What /pac test takes, and the problem each word shows.
----@type table<string, string>
-local TEST_KEYS = { growl = "growl", cower = "cower", kite = "cowerOff" }
+-- What /pac test takes: the problem each word shows, and the mode it is wrong for.
+---@type table<string, [string, PetAutocastCheckMode]>
+local TESTS = {
+    growl = { "growlOn", "dungeon" },
+    cower = { "cowerOn", "solo" },
+    kite = { "cowerOff", "kite" },
+    tank = { "growlOff", "tank" },
+}
 
 -- The on/off settings with a command of their own, and what each answers.
 ---@type table<string, [string, string]>
 local SWITCHES = {
     growl = { "GROWL_ON", "GROWL_OFF" },
-    growlDungeon = { "GROWL_DUNGEON_ON", "GROWL_DUNGEON_OFF" },
     cower = { "COWER_ON", "COWER_OFF" },
-    cowerDungeon = { "COWER_DUNGEON_ON", "COWER_DUNGEON_OFF" },
     remind = { "REMIND_ON", "REMIND_OFF" },
 }
 
--- What /pac dungeon takes first, and the setting each word switches.
----@type table<string, "growlDungeon"|"cowerDungeon">
-local DUNGEON_KEYS = { growl = "growlDungeon", cower = "cowerDungeon" }
+-- What /pac kite and /pac tank answer, switched on and off.
+---@type table<"kite"|"tank", [string, string]>
+local MODE_ANSWERS = { kite = { "KITE_ON", "KITE_OFF" }, tank = { "TANK_ON", "TANK_OFF" } }
 
 ---@type table<string, fun(rest: string)>
 local Commands = {}
 
 ---Sets one of SWITCHES from "on" or "off" and checks again, since what counts as wrong changed.
----@param key "growl"|"growlDungeon"|"cower"|"cowerDungeon"|"remind"
+---@param key "growl"|"cower"|"remind"
 ---@param rest string
 local function Switch(key, rest)
     local on = onOff(rest)
@@ -126,16 +132,6 @@ function Commands.growl(rest)
     Switch("growl", rest)
 end
 
----/pac dungeon growl|cower on|off: that warning only inside a dungeon or raid.
-function Commands.dungeon(rest)
-    local key = DUNGEON_KEYS[firstWord(rest)]
-    if not key then
-        status()
-        return
-    end
-    Switch(key, rest:match("^%S*%s*(.*)$") or "")
-end
-
 ---/pac cower on|off
 function Commands.cower(rest)
     Switch("cower", rest)
@@ -146,25 +142,40 @@ function Commands.remind(rest)
     Switch("remind", rest)
 end
 
----/pac kite [on|off]: kite mode, where Cower belongs on autocast. Without a word it toggles.
----Made for macros: `/pac kite on` in a Distracting Shot macro is pressed over and over, so it
----only says something when kite mode actually changes.
-function Commands.kite(rest)
-    local on = onOff(rest)
+---Kite or tank mode on, off, or toggled without a word. Switching one on switches the other off;
+---switching it off goes back to the mode the addon picks itself (solo or dungeon). Made for
+---macros: `/pac kite on` in a Distracting Shot macro is pressed over and over, so it only says
+---something when the mode actually changes.
+---@param mode "kite"|"tank"
+---@param rest string
+local function ChooseMode(mode, rest)
     local db = ns.db
-    if on == nil then on = not db.kite end
-    if on == db.kite then return end
-    db.kite = on
-    Print(on and L.KITE_ON or L.KITE_OFF)
+    local current = db.mode == mode
+    local on = onOff(rest)
+    if on == nil then on = not current end
+    if on == current then return end
+    db.mode = on and mode or "auto"
+    local answers = MODE_ANSWERS[mode]
+    Print(L[on and answers[1] or answers[2]])
     ns.Check()
 end
 
----/pac test [growl|cower|kite]: a toast only, whatever the pet bar says.
+---/pac kite [on|off]: kite mode, Growl off and Cower on.
+function Commands.kite(rest)
+    ChooseMode("kite", rest)
+end
+
+---/pac tank [on|off]: tank mode, Growl on and Cower off, for a group without a tank.
+function Commands.tank(rest)
+    ChooseMode("tank", rest)
+end
+
+---/pac test [growl|cower|kite|tank]: a toast only, whatever the pet says.
 function Commands.test(rest)
-    local key = TEST_KEYS[firstWord(rest)] or "growl"
-    local info = ns.ProblemToast(key)
+    local test = TESTS[firstWord(rest)] or TESTS.growl
+    local info = ns.ProblemToast(test[1], test[2])
     -- Its own key, so a real toast for the same problem is not taken for this one.
-    info.key = "test:" .. key
+    info.key = "test:" .. test[1]
     ns.ShowToast(info)
 end
 
@@ -227,9 +238,13 @@ SlashCmdList.PETAUTOCASTCHECK = function(message)
     end
 end
 
--- The key binding toggles kite mode, like /pac kite.
+-- The key bindings toggle kite and tank mode, like /pac kite and /pac tank.
 BINDING_HEADER_PETAUTOCASTCHECK = L.OPTIONS_TITLE
 BINDING_NAME_PETAUTOCASTCHECK_KITE = L.BINDING_KITE
+BINDING_NAME_PETAUTOCASTCHECK_TANK = L.BINDING_TANK
 function PetAutocastCheck_ToggleKite()
     Commands.kite("")
+end
+function PetAutocastCheck_ToggleTank()
+    Commands.tank("")
 end

@@ -3,4 +3,7 @@
     <Binding name="PETAUTOCASTCHECK_KITE" header="PETAUTOCASTCHECK" category="ADDONS">
         PetAutocastCheck_ToggleKite()
     </Binding>
+    <Binding name="PETAUTOCASTCHECK_TANK" category="ADDONS">
+        PetAutocastCheck_ToggleTank()
+    </Binding>
 </Bindings>

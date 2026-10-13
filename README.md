@@ -1,17 +1,18 @@
 # Pet Autocast Check
 
 Shows a toast in the middle of the screen when your hunter pet's Growl or
-Cower is on autocast when it should not be:
+Cower autocast does not fit what you are doing:
 
 > **Growl is on autocast**
 > Growl
-> You are in a group: your pet taunts mobs off the tank.
+> In a dungeon group the tank holds the mobs: Growl off, Cower on.
 > Right-click it on the pet bar or in your pet's spellbook to turn autocast off.
 
-Growl on autocast is what you want solo, and what the tank does not want in a
-dungeon. Cower on autocast throws away the threat your pet holds, which is
-only what you want while you kite. Both are one right-click on the pet bar
-or in the pet's spellbook, and both are easy to forget. This addon tells you the moment it matters.
+Solo your pet holds the mobs: Growl on keeps them, Cower off keeps it from
+throwing that threat away. In a dungeon the tank holds them, and it is the
+other way round. Both are one right-click on the pet bar or in the pet's
+spellbook, and both are easy to forget when you zone in or out. This addon
+tells you the moment it matters.
 
 The toast looks like
 [Pet Ability Learned](https://github.com/Langmans/PetAbilityLearned)'s
@@ -19,23 +20,26 @@ splash: a dark panel that fades out at the edges, the ability's icon in a
 ring, glowing text. It plays your pet's call, the sound it makes when you send
 it to attack.
 
-## What it checks
+## Modes
 
-- **Growl** on autocast while you are in a party or raid, inside a dungeon or
-  raid instance. A group questing in the open world is left alone; switch
-  that off (`/pac dungeon growl off`, or the **Growl only in dungeons and
-  raids** checkbox) to be warned in every group.
-- **Cower** on autocast, unless you are in kite mode. Everywhere by default;
-  `/pac dungeon cower on` (or the **Cower only in dungeons and raids**
-  checkbox) limits it to dungeons and raids.
-- **Kite mode**: Cower belongs on autocast, so it is the other way round: a
-  toast when Cower is **off**. Switch it with `/pac kite`, the key binding,
-  or the checkbox in the panel.
+What fits depends on the mode: exactly one of Growl and Cower belongs on.
 
-A toast shows when something becomes wrong: you join a group with Growl on,
-summon a pet with Cower on, switch kite mode. It goes away by itself once you
-fix it. When combat starts, whatever is still wrong toasts again (switch that
-off with `/pac remind off`).
+| Mode | Growl | Cower | When |
+| --- | --- | --- | --- |
+| **Solo** | on | off | by itself, anywhere but a dungeon group |
+| **Dungeon** | off | on | by itself, in a dungeon or raid instance while in a group |
+| **Kite** | off | on | chosen by you (`/pac kite`): the mob is on you, not on your pet |
+| **Tank** | on | off | chosen by you (`/pac tank`): your pet tanks for a group without a tank |
+
+Kite and tank win over what the addon picks itself, and exclude each other;
+switch them off to go back to solo or dungeon. A group questing in the open
+world counts as solo, and so does a dungeon on your own.
+
+A toast shows when something stops fitting: you zone into a dungeon with
+Growl on, summon a pet with Cower on, switch to kite mode. It goes away by
+itself once you fix it. When combat starts, whatever is still wrong toasts
+again (switch that off with `/pac remind off`). `/pac growl off` or
+`/pac cower off` stops watching one of the two.
 
 - The toast stays for 6 seconds, then fades. Hover over it to keep it up,
   right-click to close it, drag it to move it. Two problems at once show one
@@ -45,10 +49,11 @@ off with `/pac remind off`).
 - It only watches on hunters. On other characters the addon stays loaded but
   idle; `/pac` and the panel still work there.
 
-### Kite mode in a macro
+### Kite and tank mode in a macro
 
 `/pac kite` toggles kite mode; `/pac kite on` and `/pac kite off` set it.
-Put it in the macro you kite with, so kite mode follows what you are doing:
+`/pac tank` works the same way. Put it in the macro you kite with, so the
+mode follows what you are doing:
 
 ```
 #showtooltip Distracting Shot
@@ -56,9 +61,9 @@ Put it in the macro you kite with, so kite mode follows what you are doing:
 /cast Distracting Shot
 ```
 
-Pressing it again while kite mode is already on says nothing, so a macro you
-press over and over does not fill your chat. There is also a key binding,
-under Esc > Options > Keybindings > AddOns > Pet Autocast Check.
+Pressing it again while the mode is already on says nothing, so a macro you
+press over and over does not fill your chat. Both have a key binding, under
+Esc > Options > Keybindings > AddOns > Pet Autocast Check.
 
 ## Install
 
@@ -80,9 +85,8 @@ Made for WoW: Forever (1.60).
 Open the panel with `/pac config`, or through Esc > Options > AddOns > Pet
 Autocast Check. It shows the version and website, and has:
 
-- **Kite mode**, **Watch Growl**, **Growl only in dungeons and raids**,
-  **Watch Cower**, **Cower only in dungeons and raids** and **Remind me when
-  combat starts**.
+- **Mode**: automatic (solo or dungeon), kite, or tank.
+- **Watch Growl**, **Watch Cower** and **Remind me when combat starts**.
 - **Toast stays for** and **Toast size**: sliders for how long the toast
   stays and how big it is.
 - **Sound**: your pet's call, the raid warning, or none.
@@ -92,16 +96,14 @@ Autocast Check. It shows the version and website, and has:
 The settings are saved for the whole account. The same settings are chat
 commands too (`/petautocastcheck` works as well):
 
-- `/pac` shows the current settings, plus the list of commands.
+- `/pac` shows the mode in force and the current settings, plus the list of
+  commands.
 - `/pac config` (or `/pac options`) opens the panel.
-- `/pac kite` toggles kite mode; `/pac kite on` and `/pac kite off` set it.
-- `/pac growl on|off` and `/pac cower on|off` switch each warning.
-- `/pac dungeon growl on|off`: the Growl warning only inside a dungeon or
-  raid (the default), or in every group.
-- `/pac dungeon cower on|off`: the Cower warning only inside a dungeon or
-  raid, or everywhere (the default). Kite mode warns everywhere either way.
+- `/pac kite` and `/pac tank` toggle that mode; add `on` or `off` to set it.
+- `/pac growl on|off` and `/pac cower on|off` switch watching each one.
 - `/pac remind on|off` switches the reminder when combat starts.
-- `/pac test [growl|cower|kite]` shows the toast for that problem, whatever
+- `/pac test [growl|cower|kite|tank]` shows a toast (Growl on in a dungeon,
+  Cower on solo, Cower off in kite mode, Growl off in tank mode), whatever
   your pet says. Nothing else happens.
 - `/pac duration <seconds>` sets how long the toast stays (default 6).
 - `/pac scale <0.3-3>` sets its size (default 1).
@@ -157,22 +159,23 @@ In `.toc` order; all share the addon namespace `ns`.
   per event).
 - `Commands.lua` — `/pac`: one function per subcommand in a `Commands` table,
   looked up by the slash handler like the event frame looks up its event
-  methods; anything unknown shows the status line. Also the key binding's
-  function and names.
+  methods; anything unknown shows the status line. Also the key bindings'
+  functions and names.
 - `Options.lua` — the panel in the game's settings (`ns.OpenOptions`): the
   version, author, license and website from the .toc (`GetAddOnMetadata`),
-  the checkboxes, sliders, sound radio buttons and the test button.
-- `Bindings.xml` — the kite mode key binding. The client loads it from the
-  addon folder by itself; it is not in the `.toc`.
+  the mode and sound radio buttons, the checkboxes, sliders and the test
+  button.
+- `Bindings.xml` — the kite and tank mode key bindings. The client loads it
+  from the addon folder by itself; it is not in the `.toc`.
 - `annotations\` — editor-only types (`---@meta`) for the addon's own tables.
   Not in the `.toc`, so the game never loads them; `.wowluarc.json` gives the
   folder to WoW Lua LS as a library, and `.pkgmeta` leaves it out of the zip.
 
 The settings are saved account-wide in `PetAutocastCheckDB`: `duration`
 (whole seconds, from 1), `scale` (0.3 to 3), `sound` (`"family"`,
-`"warning"` or `"off"`), `growl`, `growlDungeon`, `cower`, `cowerDungeon`,
-`kite`, `remind` and `debug`
-(booleans), and `pos`, the dragged spot as `{ point, relativePoint, x, y }`.
+`"warning"` or `"off"`), `mode` (`"auto"`, `"kite"` or `"tank"`), `growl`,
+`cower`, `remind` and `debug` (booleans), and `pos`, the dragged spot as
+`{ point, relativePoint, x, y }`.
 Only values that differ from their default are kept: `ns.db` reads the rest
 from the defaults through a metatable, a broken value is dropped on load so
 its default shows through, numbers are put back in range, and
@@ -199,23 +202,26 @@ its default shows through, numbers are put back in range, and
 - Growl and Cower are recognised by name: the names of spells 2649 and 1742
   are looked up in the client, and every rank carries the same name, so
   nothing compares English text.
-- The rules, per problem key: `growl` is Growl on while `IsInGroup()`, and
-  with `growlDungeon` on also `IsInInstance()` of type `party` or `raid`;
-  `cower` is Cower on outside kite mode, with `cowerDungeon` on only in such
-  an instance; `cowerOff` is Cower off in kite mode, anywhere. The
-  `growl` and `cower` settings switch off their own rule; kite mode is its
-  own switch for `cowerOff`.
+- The mode in force (`ns.Mode`) is the saved `mode` when that is `kite` or
+  `tank`; otherwise `dungeon` while `IsInGroup()` and `IsInInstance()` is of
+  type `party` or `raid`, and `solo` anywhere else. `GROWL_WANTED` in
+  `Check.lua` says per mode whether Growl belongs on; Cower belongs the other
+  way. An ability in the other state is a problem, keyed by ability and
+  state: `growlOn`, `growlOff`, `cowerOn`, `cowerOff`. Its toast's reason
+  line is the mode's (`REASON_SOLO`, ...). The `growl` and `cower` settings
+  stop watching one of the two.
 - `ns.Check` compares what is wrong now with the previous check: a new
   problem toasts, a solved one calls `ns.DropToast`, which fades its toast
   out if it is up and drops it if it is waiting. On
   `PLAYER_REGEN_DISABLED` with `remind` on, every problem toasts, new or not.
 - `PET_BAR_UPDATE`, `GROUP_ROSTER_UPDATE`, `PLAYER_ENTERING_WORLD` (the end
   of every loading screen, so entering or leaving an instance) and `UNIT_PET`
-  for the player schedule one check 0.2 s later, so the burst of updates a summon gives
-  counts once. A change of setting (command, key binding or panel) checks at
+  for the player schedule one check 0.2 s later, so the burst of updates a
+  summon gives counts once. A change of setting (command, key binding or panel) checks at
   once.
 - One problem has at most one toast, up or waiting. `/pac test` gives its
-  toasts their own key (`test:growl`), so they never stand in for a real one.
+  toasts their own key (`test:growlOn`), so they never stand in for a real
+  one.
 - The sound is the aggro sound of the pet's family, by CreatureFamily ID from
   `UnitCreatureFamily`, as a FileDataID for `PlaySoundFile`: the same table
   as Pet Ability Learned's, from the wago.tools community listfile. Families

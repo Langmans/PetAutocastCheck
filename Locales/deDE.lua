@@ -4,34 +4,38 @@ ns.Locales.deDE = {
     strings = {
         TOAST_ON = "%s wird automatisch gewirkt",
         TOAST_OFF = "%s wird nicht automatisch gewirkt",
-        REASON_GROWL = "Du bist in einer Gruppe: dein Begleiter spottet dem Tank die Gegner weg.",
-        REASON_COWER = "Dein Begleiter wirft seine Bedrohung weg. Der Kite-Modus ist aus.",
-        REASON_KITE = "Der Kite-Modus ist an: dein Begleiter soll Bedrohung abbauen, während du kitest.",
+        REASON_SOLO = "Allein hält dein Begleiter die Gegner: Knurren an, Ducken aus.",
+        REASON_DUNGEON = "In einer Dungeongruppe hält der Tank die Gegner: Knurren aus, Ducken an.",
+        REASON_KITE = "Kite-Modus: der Gegner ist bei dir, nicht bei deinem Begleiter: Knurren aus, Ducken an.",
+        REASON_TANK = "Tank-Modus: dein Begleiter tankt für die Gruppe: Knurren an, Ducken aus.",
         HINT_TURN_OFF = "Rechtsklick darauf in der Begleiterleiste oder im Zauberbuch deines Begleiters "
             .. "schaltet das automatische Wirken aus.",
         HINT_TURN_ON = "Rechtsklick darauf in der Begleiterleiste oder im Zauberbuch deines Begleiters "
             .. "schaltet das automatische Wirken ein.",
 
-        STATUS = "Kite-Modus %s. Überwacht: Knurren %s (nur in Dungeons %s), Ducken %s (nur in Dungeons %s), "
-            .. "Erinnerung im Kampf %s. "
+        STATUS = "Modus %s (%s). Überwacht: Knurren %s, Ducken %s, Erinnerung im Kampf %s. "
             .. "Anzeige für %d s mit Größe %.2f, Ton %s, Debug %s. Befehle: %s",
         STATUS_ON = "an",
         STATUS_OFF = "aus",
-        NOT_HUNTER = "Nur Jägerbegleiter haben Knurren und Ducken; auf diesem Charakter wird nichts überwacht.",
-        KITE_ON = "Kite-Modus an: Ducken gehört auf automatisch.",
-        KITE_OFF = "Kite-Modus aus: Ducken gehört nicht auf automatisch.",
-        GROWL_ON = "Knurren auf automatisch in einer Gruppe wird angezeigt.",
-        GROWL_OFF = "Knurren wird nicht überwacht.",
-        GROWL_DUNGEON_ON = "Knurren wird nur in Dungeons und Schlachtzügen überwacht.",
-        GROWL_DUNGEON_OFF = "Knurren wird in jeder Gruppe überwacht, auch in der offenen Welt.",
-        COWER_DUNGEON_ON = "Ducken wird nur in Dungeons und Schlachtzügen überwacht (der Kite-Modus weiter überall).",
-        COWER_DUNGEON_OFF = "Ducken wird überall überwacht.",
-        COWER_ON = "Ducken auf automatisch außerhalb des Kite-Modus wird angezeigt.",
-        COWER_OFF = "Ducken wird außerhalb des Kite-Modus nicht überwacht.",
-        REMIND_ON = "Was noch falsch ist, wird bei Kampfbeginn erneut angezeigt.",
-        REMIND_OFF = "Keine Erinnerung bei Kampfbeginn.",
+        MODE_SOLO = "allein",
+        MODE_DUNGEON = "Dungeon",
+        MODE_KITE = "Kiten",
+        MODE_TANK = "Tank",
+        MODE_AUTO = "vom Addon gewählt",
+        MODE_CHOSEN = "von dir gewählt",
         SOUND_NAME_FAMILY = "Ruf des Begleiters",
         SOUND_NAME_WARNING = "Schlachtzugswarnung",
+        NOT_HUNTER = "Nur Jägerbegleiter haben Knurren und Ducken; auf diesem Charakter wird nichts überwacht.",
+        KITE_ON = "Kite-Modus an: Knurren aus, Ducken an.",
+        KITE_OFF = "Kite-Modus aus: wieder allein oder Dungeon, je nachdem.",
+        TANK_ON = "Tank-Modus an: Knurren an, Ducken aus.",
+        TANK_OFF = "Tank-Modus aus: wieder allein oder Dungeon, je nachdem.",
+        GROWL_ON = "Knurren wird angezeigt, wenn sein automatisches Wirken nicht zum Modus passt.",
+        GROWL_OFF = "Knurren wird nicht überwacht.",
+        COWER_ON = "Ducken wird angezeigt, wenn sein automatisches Wirken nicht zum Modus passt.",
+        COWER_OFF = "Ducken wird nicht überwacht.",
+        REMIND_ON = "Was noch falsch ist, wird bei Kampfbeginn erneut angezeigt.",
+        REMIND_OFF = "Keine Erinnerung bei Kampfbeginn.",
         SOUND_FAMILY = "Ton: der Ruf deines Begleiters, wie beim Angriffsbefehl (ohne einen die Schlachtzugswarnung).",
         SOUND_WARNING = "Ton: die Schlachtzugswarnung.",
         SOUND_OFF = "Ton aus.",
@@ -43,31 +47,31 @@ ns.Locales.deDE = {
         OPTIONS_AFTER_COMBAT = "Im Kampf: die Optionen öffnen sich, wenn der Kampf endet.",
 
         BINDING_KITE = "Kite-Modus umschalten",
+        BINDING_TANK = "Tank-Modus umschalten",
 
         OPTION_ABOUT = "Version %s von %s, Lizenz %s.",
         OPTION_WEBSITE = "Webseite (Strg+C zum Kopieren):",
-        OPTION_DESCRIPTION = "Eine Anzeige in der Bildschirmmitte, wenn Knurren oder Ducken deines Begleiters "
-            .. "automatisch gewirkt wird, obwohl das nicht sein sollte: Knurren in einer Gruppe, Ducken "
-            .. "außer beim Kiten. Im Kite-Modus ist es bei Ducken umgekehrt: es soll an sein.\n\n"
+        OPTION_DESCRIPTION = "Eine Anzeige in der Bildschirmmitte, wenn das automatische Wirken von Knurren "
+            .. "oder Ducken deines Begleiters nicht zu dem passt, was du tust:\n"
+            .. "- Allein: Knurren an, Ducken aus.\n"
+            .. "- In einer Dungeon- oder Schlachtzuggruppe: Knurren aus, Ducken an.\n"
+            .. "- Kite-Modus: Knurren aus, Ducken an.\n"
+            .. "- Tank-Modus, wenn dein Begleiter für die Gruppe tankt: Knurren an, Ducken aus.\n\n"
             .. "Ziehe die Anzeige, um sie zu verschieben, Rechtsklick schließt sie, mit der Maus darüber "
             .. "bleibt sie stehen. /pac zeigt die Befehle.",
         OPTION_SETTINGS = "Einstellungen",
-        OPTION_KITE = "Kite-Modus",
-        OPTION_KITE_NOTE = "Ducken gehört auf automatisch, und eine Anzeige sagt es, wenn es aus ist. "
-            .. "Wie /pac kite; eine Tastenbelegung gibt es unter Esc > Optionen > Tastaturbelegung.",
+        OPTION_MODE = "Modus",
+        OPTION_MODE_AUTO = "Automatisch: allein, oder Dungeon in einer Dungeon- oder Schlachtzuggruppe",
+        OPTION_MODE_KITE = "Kiten: Knurren aus, Ducken an",
+        OPTION_MODE_TANK = "Tank: Knurren an, Ducken aus, auch im Dungeon",
+        OPTION_MODE_NOTE = "Wie /pac kite und /pac tank; beide haben eine Tastenbelegung unter "
+            .. "Esc > Optionen > Tastaturbelegung und passen in ein Makro.",
         OPTION_GROWL = "Knurren überwachen",
-        OPTION_GROWL_NOTE = "Eine Anzeige, wenn Knurren in einer Gruppe oder einem Schlachtzug automatisch "
-            .. "gewirkt wird. Wie /pac growl on und off.",
-        OPTION_GROWL_DUNGEON = "Knurren nur in Dungeons und Schlachtzügen",
-        OPTION_GROWL_DUNGEON_NOTE = "Knurren nur in einem Dungeon oder Schlachtzug überwachen, wo ein Tank die "
-            .. "Bedrohung hält; eine Gruppe beim Questen draußen bleibt unbehelligt. "
-            .. "Wie /pac dungeon growl on und off.",
+        OPTION_GROWL_NOTE = "Eine Anzeige, wenn das automatische Wirken von Knurren nicht zum Modus passt. "
+            .. "Wie /pac growl on und off.",
         OPTION_COWER = "Ducken überwachen",
-        OPTION_COWER_NOTE = "Eine Anzeige, wenn Ducken außerhalb des Kite-Modus automatisch gewirkt wird. "
+        OPTION_COWER_NOTE = "Eine Anzeige, wenn das automatische Wirken von Ducken nicht zum Modus passt. "
             .. "Wie /pac cower on und off.",
-        OPTION_COWER_DUNGEON = "Ducken nur in Dungeons und Schlachtzügen",
-        OPTION_COWER_DUNGEON_NOTE = "Ducken nur in einem Dungeon oder Schlachtzug überwachen; der Kite-Modus "
-            .. "warnt weiter überall. Wie /pac dungeon cower on und off.",
         OPTION_REMIND = "Bei Kampfbeginn erinnern",
         OPTION_REMIND_NOTE = "Was noch falsch ist, wird beim Pull erneut angezeigt. Wie /pac remind on und off.",
         OPTION_SOUND = "Ton",

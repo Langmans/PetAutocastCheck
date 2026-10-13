@@ -1,16 +1,17 @@
 local ADDON_NAME, ns = ...
 
--- What counts as wrong, from the pet bar's autocast state:
---   - growl:    Growl on autocast while in a party or raid. There the tank holds threat, and a
---               pet that taunts on its own pulls mobs off them. Solo, Growl on is what you want.
---               With growlDungeon (the default) only inside a dungeon or raid instance: a group
---               questing in the open world usually has no tank to pull mobs off.
---   - cower:    Cower on autocast outside kite mode. It throws away the threat the pet holds.
---               With cowerDungeon (off by default) only inside a dungeon or raid instance.
---   - cowerOff: Cower off autocast in kite mode. While the hunter kites, the pet should not keep
---               the mob's attention, so Cower belongs on.
--- Each problem toasts when it starts; when it is solved, its toast goes away. With the remind
--- setting, everything still wrong toasts again when combat starts.
+-- What counts as wrong depends on the mode, which says who holds the mobs:
+--   - solo:    the pet does. Growl on, so it keeps them; Cower off, so it does not throw that
+--              threat away.
+--   - dungeon: the tank does. Growl off, or the pet taunts mobs off the tank; Cower on, so the
+--              pet's threat stays under the tank's. Picked by itself inside a dungeon or raid
+--              instance while in a group; anywhere else it is solo.
+--   - kite:    the hunter does, kiting. Like dungeon: Growl off, Cower on. Chosen by hand.
+--   - tank:    the pet does, in a group without a tank. Like solo: Growl on, Cower off. Chosen
+--              by hand.
+-- Growl or Cower in the other state than the mode wants is a problem (growlOn, growlOff,
+-- cowerOn, cowerOff). Each problem toasts when it starts; when it is solved, its toast goes
+-- away. With the remind setting, everything still wrong toasts again when combat starts.
 --
 -- The state comes from the pet's spellbook, which holds every ability whether it is on the pet
 -- bar or not (Cower often is not), and from the pet bar. Ability names come from the client by
@@ -20,16 +21,25 @@ local L = ns.L
 
 local GROWL, COWER = 2649, 1742
 
--- The order toasts are shown in when several problems start at once.
-local ORDER = { "growl", "cower", "cowerOff" }
+-- Per mode: whether Growl belongs on autocast; Cower belongs the other way.
+---@type table<PetAutocastCheckMode, boolean>
+local GROWL_WANTED = { solo = true, tank = true, dungeon = false, kite = false }
 
--- Per problem: the ability it is about, and the locale keys for the title, the reason and the
--- hint on its toast.
----@type table<string, {spell: number, title: string, reason: string, hint: string}>
+-- Per mode: the toast's line saying why, with what the mode wants.
+---@type table<PetAutocastCheckMode, string>
+local REASONS = { solo = "REASON_SOLO", dungeon = "REASON_DUNGEON", kite = "REASON_KITE", tank = "REASON_TANK" }
+
+-- The order toasts are shown in when several problems start at once.
+local ORDER = { "growlOn", "growlOff", "cowerOn", "cowerOff" }
+
+-- Per problem: the ability it is about, and the locale keys for the title and the hint on its
+-- toast. "On" is on autocast while the mode wants it off.
+---@type table<string, {spell: number, title: string, hint: string}>
 local PROBLEMS = {
-    growl = { spell = GROWL, title = "TOAST_ON", reason = "REASON_GROWL", hint = "HINT_TURN_OFF" },
-    cower = { spell = COWER, title = "TOAST_ON", reason = "REASON_COWER", hint = "HINT_TURN_OFF" },
-    cowerOff = { spell = COWER, title = "TOAST_OFF", reason = "REASON_KITE", hint = "HINT_TURN_ON" },
+    growlOn = { spell = GROWL, title = "TOAST_ON", hint = "HINT_TURN_OFF" },
+    growlOff = { spell = GROWL, title = "TOAST_OFF", hint = "HINT_TURN_ON" },
+    cowerOn = { spell = COWER, title = "TOAST_ON", hint = "HINT_TURN_OFF" },
+    cowerOff = { spell = COWER, title = "TOAST_OFF", hint = "HINT_TURN_ON" },
 }
 
 -- The English names, for a client that cannot name the spell itself (test toasts only).
@@ -96,10 +106,11 @@ end
 
 ---The toast for a problem, about the ability as the pet bar shows it.
 ---@param key string one of ORDER
+---@param mode PetAutocastCheckMode the mode it is wrong for
 ---@param name string? the ability's name; looked up when nil
 ---@param icon (number|string)? its icon; looked up when nil
 ---@return PetAutocastCheckToastInfo
-function ns.ProblemToast(key, name, icon)
+function ns.ProblemToast(key, mode, name, icon)
     local problem = PROBLEMS[key]
     local spellName, spellIcon = ns.SpellInfo(problem.spell)
     name = name or spellName or FALLBACK_NAMES[problem.spell]
@@ -108,7 +119,7 @@ function ns.ProblemToast(key, name, icon)
         title = ns.Format(problem.title, name),
         name = name,
         icon = icon or spellIcon,
-        reason = L[problem.reason],
+        reason = L[REASONS[mode]],
         hint = L[problem.hint],
     }
 end
@@ -120,11 +131,29 @@ local function InDungeon()
     return inInstance == true and (kind == "party" or kind == "raid")
 end
 
----Whether a warning whose "only in dungeons" setting is `dungeonOnly` applies here.
----@param dungeonOnly boolean
----@return boolean
-local function HereCounts(dungeonOnly)
-    return not dungeonOnly or InDungeon()
+---The mode in force: kite or tank when chosen, else dungeon in a dungeon or raid group, else
+---solo.
+---@return PetAutocastCheckMode
+function ns.Mode()
+    local chosen = ns.db.mode
+    if chosen == "kite" or chosen == "tank" then return chosen end
+    if IsInGroup() and InDungeon() then return "dungeon" end
+    return "solo"
+end
+
+---Adds the problem of one ability to `found`, when it is watched and not as the mode wants.
+---@param found table<string, PetAutocastCheckToastInfo>
+---@param states table<string, PetAutocastCheckAutocastState>
+---@param spell number
+---@param prefix "growl"|"cower" the problem keys' start
+---@param wanted boolean whether the mode wants it on autocast
+---@param mode PetAutocastCheckMode
+local function Compare(found, states, spell, prefix, wanted, mode)
+    local name = ns.SpellInfo(spell)
+    local state = name and states[name]
+    if not state or state.on == wanted then return end
+    local key = prefix .. (state.on and "On" or "Off")
+    found[key] = ns.ProblemToast(key, mode, name, state.icon)
 end
 
 ---What is wrong right now, by problem key.
@@ -134,18 +163,10 @@ local function Problems()
     local found = {}
     local db = ns.db
     local states = ns.PetAutocasts()
-    local growlName = ns.SpellInfo(GROWL)
-    local growl = growlName and states[growlName]
-    if growl and growl.on and db.growl and IsInGroup() and HereCounts(db.growlDungeon) then
-        found.growl = ns.ProblemToast("growl", growlName, growl.icon)
-    end
-    local cowerName = ns.SpellInfo(COWER)
-    local cower = cowerName and states[cowerName]
-    if cower and db.kite and not cower.on then
-        found.cowerOff = ns.ProblemToast("cowerOff", cowerName, cower.icon)
-    elseif cower and not db.kite and db.cower and cower.on and HereCounts(db.cowerDungeon) then
-        found.cower = ns.ProblemToast("cower", cowerName, cower.icon)
-    end
+    local mode = ns.Mode()
+    local growlWanted = GROWL_WANTED[mode]
+    if db.growl then Compare(found, states, GROWL, "growl", growlWanted, mode) end
+    if db.cower then Compare(found, states, COWER, "cower", not growlWanted, mode) end
     return found
 end
 

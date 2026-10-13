@@ -3,9 +3,9 @@ local ADDON_NAME, ns = ...
 -- The panel in the game's settings (Esc > Options > AddOns, or /pac config). From top to bottom:
 --   - the version, author and license from the .toc, and the website in a box to copy it from (a
 --     link in the game cannot open a browser) when the .toc names one, and what the addon does;
---   - the settings: checkboxes for /pac kite, growl, cower, both /pac dungeon and remind, sliders for /pac duration
---     and /pac scale, the three /pac sound choices, a checkbox for /pac debug, and a button for
---     /pac test.
+--   - the settings: the mode (automatic, /pac kite or /pac tank), checkboxes for /pac growl,
+--     cower and remind, sliders for /pac duration and /pac scale, the three /pac sound choices,
+--     a checkbox for /pac debug, and a button for /pac test.
 -- Everything is filled from ns.db every time the panel is shown, so a change made with /pac in
 -- the meantime shows up; a click writes straight to ns.db and checks the pet bar again.
 -- The whole panel scrolls: the settings window is shorter than the panel on a small screen.
@@ -21,7 +21,7 @@ ns.OptionsPanel = panel
 -- size the settings window decides; CONTENT_WIDTH only holds until then.
 -- UIPanelScrollFrameTemplate puts its scroll bar just outside the frame's right edge, hence the
 -- room on the right.
-local CONTENT_WIDTH, CONTENT_HEIGHT = 600, 875
+local CONTENT_WIDTH, CONTENT_HEIGHT = 600, 900
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
 scroll:SetPoint("BOTTOMRIGHT", -28, 4)
@@ -142,8 +142,55 @@ local function LabelOf(button)
     return (rawget(button, "Text") or rawget(button, "text")) --[[@as FontString]]
 end
 
+---Radio buttons for a setting with a few named values, under a label: one button per value,
+---and a line of explanation under them when there is a note. A click saves the value and checks
+---the pet again, since the mode decides what counts as wrong.
+---@param key "mode"|"sound"
+---@param label string
+---@param gap number pixels above the label
+---@param choices string[][] each value with its button's label
+---@param note string?
+---@return table<string, CheckButton> buttons by value
+local function AddRadios(key, label, gap, choices, note)
+    local title = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    Place(title, 0, gap)
+    title:SetText(label)
+    ---@type table<string, CheckButton>
+    local buttons = {}
+    for _, choice in ipairs(choices) do
+        ---@type string
+        local value = choice[1]
+        local radio = CreateFrame("CheckButton", nil, content, "UIRadioButtonTemplate")
+        Place(radio, 0, 6)
+        local text = LabelOf(radio)
+        text:SetFontObject("GameFontHighlightSmall")
+        text:SetText(choice[2])
+        radio:SetScript("OnClick", function()
+            local db = ns.db
+            db[key] = value
+            for other, button in pairs(buttons) do
+                button:SetChecked(other == value)
+            end
+            ns.Check()
+        end)
+        buttons[value] = radio
+    end
+    if note then
+        local noteText = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+        Place(noteText, CHECKBOX_LABEL_X, 4)
+        toRightEdge(noteText)
+        noteText:SetText(note)
+    end
+    syncs[#syncs + 1] = function()
+        for value, button in pairs(buttons) do
+            button:SetChecked(ns.db[key] == value)
+        end
+    end
+    return buttons
+end
+
 ---A checkbox for one boolean setting, with a line of explanation under it.
----@param key "kite"|"growl"|"growlDungeon"|"cower"|"cowerDungeon"|"remind"|"debug"
+---@param key "growl"|"cower"|"remind"|"debug"
 ---@param label string
 ---@param note string
 ---@return CheckButton
@@ -171,16 +218,15 @@ local function AddCheckbox(key, label, note)
     return box
 end
 
----@type CheckButton
-ns.KiteBox = AddCheckbox("kite", L.OPTION_KITE, L.OPTION_KITE_NOTE)
+ns.ModeButtons = AddRadios("mode", L.OPTION_MODE, 12, {
+    { "auto", L.OPTION_MODE_AUTO },
+    { "kite", L.OPTION_MODE_KITE },
+    { "tank", L.OPTION_MODE_TANK },
+}, L.OPTION_MODE_NOTE)
 ---@type CheckButton
 ns.GrowlBox = AddCheckbox("growl", L.OPTION_GROWL, L.OPTION_GROWL_NOTE)
 ---@type CheckButton
-ns.GrowlDungeonBox = AddCheckbox("growlDungeon", L.OPTION_GROWL_DUNGEON, L.OPTION_GROWL_DUNGEON_NOTE)
----@type CheckButton
 ns.CowerBox = AddCheckbox("cower", L.OPTION_COWER, L.OPTION_COWER_NOTE)
----@type CheckButton
-ns.CowerDungeonBox = AddCheckbox("cowerDungeon", L.OPTION_COWER_DUNGEON, L.OPTION_COWER_DUNGEON_NOTE)
 ---@type CheckButton
 ns.RemindBox = AddCheckbox("remind", L.OPTION_REMIND, L.OPTION_REMIND_NOTE)
 
@@ -243,40 +289,12 @@ ns.DurationSlider = AddSlider("PetAutocastCheckDurationSlider", "duration", 1, 3
 ---@type Slider
 ns.ScaleSlider = AddSlider("PetAutocastCheckScaleSlider", "scale", 0.3, 3, 0.05, scaleTitle)
 
--- The sound: three radio buttons under a label, one per mode.
-local soundLabel = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
--- Below the slider's own low/high labels.
-Place(soundLabel, 0, 28)
-soundLabel:SetText(L.OPTION_SOUND)
----@type table<PetAutocastCheckSoundMode, CheckButton>
-local soundButtons = {}
-for _, choice in ipairs({
+-- 28 pixels: below the slider's own low/high labels.
+ns.SoundButtons = AddRadios("sound", L.OPTION_SOUND, 28, {
     { "family", L.OPTION_SOUND_FAMILY },
     { "warning", L.OPTION_SOUND_WARNING },
     { "off", L.OPTION_SOUND_OFF },
-}) do
-    ---@type PetAutocastCheckSoundMode
-    local mode = choice[1]
-    local radio = CreateFrame("CheckButton", nil, content, "UIRadioButtonTemplate")
-    Place(radio, 0, 6)
-    local label = LabelOf(radio)
-    label:SetFontObject("GameFontHighlightSmall")
-    label:SetText(choice[2])
-    radio:SetScript("OnClick", function()
-        local db = ns.db
-        db.sound = mode
-        for other, button in pairs(soundButtons) do
-            button:SetChecked(other == mode)
-        end
-    end)
-    soundButtons[mode] = radio
-end
-ns.SoundButtons = soundButtons
-syncs[#syncs + 1] = function()
-    for mode, button in pairs(soundButtons) do
-        button:SetChecked(ns.db.sound == mode)
-    end
-end
+})
 
 ---@type CheckButton
 ns.DebugBox = AddCheckbox("debug", L.OPTION_DEBUG, L.OPTION_DEBUG_NOTE)

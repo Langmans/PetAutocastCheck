@@ -9,36 +9,41 @@ ns.Locales.enUS = {
     strings = {
         CHAT_PREFIX = "Pet Autocast Check:",
 
-        -- The toast. The titles get the ability's name.
+        -- The toast. The titles get the ability's name; the reason says what the mode in force
+        -- wants.
         TOAST_ON = "%s is on autocast",
         TOAST_OFF = "%s is not on autocast",
-        REASON_GROWL = "You are in a group: your pet taunts mobs off the tank.",
-        REASON_COWER = "Your pet throws away its threat. Kite mode is off.",
-        REASON_KITE = "Kite mode is on: your pet should shed threat while you kite.",
+        REASON_SOLO = "Solo your pet holds the mobs: Growl on, Cower off.",
+        REASON_DUNGEON = "In a dungeon group the tank holds the mobs: Growl off, Cower on.",
+        REASON_KITE = "Kite mode: the mob is on you, not on your pet: Growl off, Cower on.",
+        REASON_TANK = "Tank mode: your pet tanks for the group: Growl on, Cower off.",
         HINT_TURN_OFF = "Right-click it on the pet bar or in your pet's spellbook to turn autocast off.",
         HINT_TURN_ON = "Right-click it on the pet bar or in your pet's spellbook to turn autocast on.",
 
-        -- /pac. STATUS: kite mode, Growl, Growl only in dungeons, Cower, Cower only in dungeons and
-        -- the combat reminder on/off, the toast's duration in seconds and scale, sound (a
-        -- SOUND_NAME_* or STATUS_OFF), debug on/off, the command list.
-        STATUS = "Kite mode %s. Watching Growl %s (only in dungeons %s), Cower %s (only in dungeons %s), "
-            .. "reminder in combat %s. "
+        -- /pac. STATUS: the mode in force (a MODE_* name), how it was chosen (MODE_AUTO or
+        -- MODE_CHOSEN), Growl, Cower and the combat reminder on/off, the toast's duration in
+        -- seconds and scale, sound (a SOUND_NAME_* or STATUS_OFF), debug on/off, the command list.
+        STATUS = "Mode %s (%s). Watching Growl %s, Cower %s, reminder in combat %s. "
             .. "Toast for %d s at scale %.2f, sound %s, debug %s. Commands: %s",
         STATUS_ON = "on",
         STATUS_OFF = "off",
+        MODE_SOLO = "solo",
+        MODE_DUNGEON = "dungeon",
+        MODE_KITE = "kite",
+        MODE_TANK = "tank",
+        MODE_AUTO = "picked by the addon",
+        MODE_CHOSEN = "chosen by you",
         SOUND_NAME_FAMILY = "pet's call",
         SOUND_NAME_WARNING = "raid warning",
         NOT_HUNTER = "Only hunter pets have Growl and Cower; nothing is watched on this character.",
-        KITE_ON = "Kite mode on: Cower belongs on autocast.",
-        KITE_OFF = "Kite mode off: Cower belongs off autocast.",
-        GROWL_ON = "Growl on autocast in a group gets a toast.",
+        KITE_ON = "Kite mode on: Growl off, Cower on.",
+        KITE_OFF = "Kite mode off: solo or dungeon mode again, as fits.",
+        TANK_ON = "Tank mode on: Growl on, Cower off.",
+        TANK_OFF = "Tank mode off: solo or dungeon mode again, as fits.",
+        GROWL_ON = "Growl gets a toast when its autocast does not fit the mode.",
         GROWL_OFF = "Growl is not watched.",
-        GROWL_DUNGEON_ON = "Growl is only watched in a dungeon or raid.",
-        GROWL_DUNGEON_OFF = "Growl is watched in every group, in the open world too.",
-        COWER_ON = "Cower on autocast outside kite mode gets a toast.",
-        COWER_OFF = "Cower is not watched outside kite mode.",
-        COWER_DUNGEON_ON = "Cower is only watched in a dungeon or raid (kite mode still everywhere).",
-        COWER_DUNGEON_OFF = "Cower is watched everywhere.",
+        COWER_ON = "Cower gets a toast when its autocast does not fit the mode.",
+        COWER_OFF = "Cower is not watched.",
         REMIND_ON = "What is still wrong toasts again when combat starts.",
         REMIND_OFF = "No reminder when combat starts.",
         SOUND_FAMILY = "Sound: your pet's call, as when you send it to attack (the raid warning when it has none).",
@@ -53,32 +58,32 @@ ns.Locales.enUS = {
 
         -- Esc > Options > Keybindings.
         BINDING_KITE = "Toggle kite mode",
+        BINDING_TANK = "Toggle tank mode",
 
         -- The options panel (Options.lua).
         OPTIONS_TITLE = "Pet Autocast Check",
         -- Version, author and license from the .toc.
         OPTION_ABOUT = "Version %s by %s, %s license.",
         OPTION_WEBSITE = "Website (Ctrl+C to copy):",
-        OPTION_DESCRIPTION = "A toast in the middle of the screen when your pet's Growl or Cower is on "
-            .. "autocast when it should not be: Growl while you are in a group, Cower unless you kite. "
-            .. "In kite mode it is the other way round for Cower: it should be on.\n\n"
+        OPTION_DESCRIPTION = "A toast in the middle of the screen when your pet's Growl or Cower autocast "
+            .. "does not fit what you are doing:\n"
+            .. "- Solo: Growl on, Cower off.\n"
+            .. "- In a dungeon or raid group: Growl off, Cower on.\n"
+            .. "- Kite mode: Growl off, Cower on.\n"
+            .. "- Tank mode, when your pet tanks for the group: Growl on, Cower off.\n\n"
             .. "Drag the toast to move it, right-click to close it, hover to keep it up. "
             .. "Type /pac for the commands.",
         OPTION_SETTINGS = "Settings",
-        OPTION_KITE = "Kite mode",
-        OPTION_KITE_NOTE = "Cower belongs on autocast, and a toast says so when it is off. "
-            .. "Same as /pac kite; there is a key binding for it under Esc > Options > Keybindings.",
+        OPTION_MODE = "Mode",
+        OPTION_MODE_AUTO = "Automatic: solo, or dungeon in a dungeon or raid group",
+        OPTION_MODE_KITE = "Kite: Growl off, Cower on",
+        OPTION_MODE_TANK = "Tank: Growl on, Cower off, in a dungeon too",
+        OPTION_MODE_NOTE = "Same as /pac kite and /pac tank; both have a key binding under "
+            .. "Esc > Options > Keybindings, and fit in a macro.",
         OPTION_GROWL = "Watch Growl",
-        OPTION_GROWL_NOTE = "A toast when Growl is on autocast while you are in a party or raid. "
-            .. "Same as /pac growl on and off.",
-        OPTION_GROWL_DUNGEON = "Growl only in dungeons and raids",
-        OPTION_GROWL_DUNGEON_NOTE = "Watch Growl only inside a dungeon or raid, where a tank holds the threat; "
-            .. "a group questing outside is left alone. Same as /pac dungeon growl on and off.",
+        OPTION_GROWL_NOTE = "A toast when Growl's autocast does not fit the mode. Same as /pac growl on and off.",
         OPTION_COWER = "Watch Cower",
-        OPTION_COWER_NOTE = "A toast when Cower is on autocast outside kite mode. Same as /pac cower on and off.",
-        OPTION_COWER_DUNGEON = "Cower only in dungeons and raids",
-        OPTION_COWER_DUNGEON_NOTE = "Watch Cower only inside a dungeon or raid; kite mode still warns everywhere. "
-            .. "Same as /pac dungeon cower on and off.",
+        OPTION_COWER_NOTE = "A toast when Cower's autocast does not fit the mode. Same as /pac cower on and off.",
         OPTION_REMIND = "Remind me when combat starts",
         OPTION_REMIND_NOTE = "Whatever is still wrong toasts again at the pull. Same as /pac remind on and off.",
         OPTION_SOUND = "Sound",

@@ -4,35 +4,39 @@ ns.Locales.frFR = {
     strings = {
         TOAST_ON = "%s est en lancement automatique",
         TOAST_OFF = "%s n'est pas en lancement automatique",
-        REASON_GROWL = "Vous êtes en groupe : votre familier arrache les monstres au tank.",
-        REASON_COWER = "Votre familier jette sa menace. Le mode kite est désactivé.",
-        REASON_KITE = "Le mode kite est activé : votre familier doit perdre de la menace pendant que vous kitez.",
+        REASON_SOLO = "En solo votre familier retient les monstres : Grondement activé, Dérobade désactivée.",
+        REASON_DUNGEON = "En groupe de donjon le tank retient les monstres : Grondement désactivé, Dérobade activée.",
+        REASON_KITE = "Mode kite : le monstre est sur vous, pas sur votre familier : Grondement désactivé, "
+            .. "Dérobade activée.",
+        REASON_TANK = "Mode tank : votre familier tanke pour le groupe : Grondement activé, Dérobade désactivée.",
         HINT_TURN_OFF = "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
             .. "pour couper le lancement automatique.",
         HINT_TURN_ON = "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
             .. "pour activer le lancement automatique.",
 
-        STATUS = "Mode kite %s. Surveillance de Grondement %s (seulement en donjon %s), "
-            .. "Dérobade %s (seulement en donjon %s), "
-            .. "rappel en combat %s. "
+        STATUS = "Mode %s (%s). Surveillance de Grondement %s, Dérobade %s, rappel en combat %s. "
             .. "Alerte pendant %d s à la taille %.2f, son %s, débogage %s. Commandes : %s",
         STATUS_ON = "activé",
         STATUS_OFF = "désactivé",
-        NOT_HUNTER = "Seuls les familiers de chasseur ont Grondement et Dérobade ; rien n'est surveillé sur ce personnage.",
-        KITE_ON = "Mode kite activé : Dérobade doit être en lancement automatique.",
-        KITE_OFF = "Mode kite désactivé : Dérobade ne doit pas être en lancement automatique.",
-        GROWL_ON = "Grondement en lancement automatique en groupe donne une alerte.",
-        GROWL_OFF = "Grondement n'est pas surveillé.",
-        GROWL_DUNGEON_ON = "Grondement n'est surveillé qu'en donjon et en raid.",
-        GROWL_DUNGEON_OFF = "Grondement est surveillé dans tout groupe, en monde ouvert aussi.",
-        COWER_DUNGEON_ON = "Dérobade n'est surveillée qu'en donjon et en raid (le mode kite partout).",
-        COWER_DUNGEON_OFF = "Dérobade est surveillée partout.",
-        COWER_ON = "Dérobade en lancement automatique hors du mode kite donne une alerte.",
-        COWER_OFF = "Dérobade n'est pas surveillée hors du mode kite.",
-        REMIND_ON = "Ce qui est encore faux redonne une alerte au début du combat.",
-        REMIND_OFF = "Pas de rappel au début du combat.",
+        MODE_SOLO = "solo",
+        MODE_DUNGEON = "donjon",
+        MODE_KITE = "kite",
+        MODE_TANK = "tank",
+        MODE_AUTO = "choisi par l'addon",
+        MODE_CHOSEN = "choisi par vous",
         SOUND_NAME_FAMILY = "cri du familier",
         SOUND_NAME_WARNING = "avertissement de raid",
+        NOT_HUNTER = "Seuls les familiers de chasseur ont Grondement et Dérobade ; rien n'est surveillé sur ce personnage.",
+        KITE_ON = "Mode kite activé : Grondement désactivé, Dérobade activée.",
+        KITE_OFF = "Mode kite désactivé : de nouveau solo ou donjon, selon le cas.",
+        TANK_ON = "Mode tank activé : Grondement activé, Dérobade désactivée.",
+        TANK_OFF = "Mode tank désactivé : de nouveau solo ou donjon, selon le cas.",
+        GROWL_ON = "Grondement donne une alerte quand son lancement automatique ne va pas avec le mode.",
+        GROWL_OFF = "Grondement n'est pas surveillé.",
+        COWER_ON = "Dérobade donne une alerte quand son lancement automatique ne va pas avec le mode.",
+        COWER_OFF = "Dérobade n'est pas surveillée.",
+        REMIND_ON = "Ce qui est encore faux redonne une alerte au début du combat.",
+        REMIND_OFF = "Pas de rappel au début du combat.",
         SOUND_FAMILY = "Son : le cri de votre familier, comme quand vous l'envoyez attaquer (l'avertissement de raid s'il n'en a pas).",
         SOUND_WARNING = "Son : l'avertissement de raid.",
         SOUND_OFF = "Son désactivé.",
@@ -44,32 +48,31 @@ ns.Locales.frFR = {
         OPTIONS_AFTER_COMBAT = "En combat : les options s'ouvriront à la fin du combat.",
 
         BINDING_KITE = "Activer ou désactiver le mode kite",
+        BINDING_TANK = "Activer ou désactiver le mode tank",
 
         OPTION_ABOUT = "Version %s par %s, licence %s.",
         OPTION_WEBSITE = "Site web (Ctrl+C pour copier) :",
-        OPTION_DESCRIPTION = "Une alerte au milieu de l'écran quand Grondement ou Dérobade de votre familier "
-            .. "est en lancement automatique alors qu'il ne devrait pas l'être : Grondement en groupe, "
-            .. "Dérobade sauf quand vous kitez. En mode kite, c'est l'inverse pour Dérobade : elle doit "
-            .. "être activée.\n\n"
+        OPTION_DESCRIPTION = "Une alerte au milieu de l'écran quand le lancement automatique de Grondement "
+            .. "ou de Dérobade de votre familier ne va pas avec ce que vous faites :\n"
+            .. "- En solo : Grondement activé, Dérobade désactivée.\n"
+            .. "- En groupe de donjon ou de raid : Grondement désactivé, Dérobade activée.\n"
+            .. "- Mode kite : Grondement désactivé, Dérobade activée.\n"
+            .. "- Mode tank, quand votre familier tanke pour le groupe : Grondement activé, Dérobade désactivée.\n\n"
             .. "Faites glisser l'alerte pour la déplacer, clic droit pour la fermer, survolez-la pour la "
             .. "garder. Tapez /pac pour les commandes.",
         OPTION_SETTINGS = "Réglages",
-        OPTION_KITE = "Mode kite",
-        OPTION_KITE_NOTE = "Dérobade doit être en lancement automatique, et une alerte le dit quand elle ne "
-            .. "l'est pas. Comme /pac kite ; un raccourci existe dans Échap > Options > Raccourcis.",
+        OPTION_MODE = "Mode",
+        OPTION_MODE_AUTO = "Automatique : solo, ou donjon en groupe de donjon ou de raid",
+        OPTION_MODE_KITE = "Kite : Grondement désactivé, Dérobade activée",
+        OPTION_MODE_TANK = "Tank : Grondement activé, Dérobade désactivée, en donjon aussi",
+        OPTION_MODE_NOTE = "Comme /pac kite et /pac tank ; les deux ont un raccourci dans "
+            .. "Échap > Options > Raccourcis et vont dans une macro.",
         OPTION_GROWL = "Surveiller Grondement",
-        OPTION_GROWL_NOTE = "Une alerte quand Grondement est en lancement automatique en groupe ou en raid. "
+        OPTION_GROWL_NOTE = "Une alerte quand le lancement automatique de Grondement ne va pas avec le mode. "
             .. "Comme /pac growl on et off.",
-        OPTION_GROWL_DUNGEON = "Grondement seulement en donjon et en raid",
-        OPTION_GROWL_DUNGEON_NOTE = "Surveiller Grondement seulement dans un donjon ou un raid, où un tank "
-            .. "tient la menace ; un groupe qui fait des quêtes dehors est laissé tranquille. "
-            .. "Comme /pac dungeon growl on et off.",
         OPTION_COWER = "Surveiller Dérobade",
-        OPTION_COWER_NOTE = "Une alerte quand Dérobade est en lancement automatique hors du mode kite. "
+        OPTION_COWER_NOTE = "Une alerte quand le lancement automatique de Dérobade ne va pas avec le mode. "
             .. "Comme /pac cower on et off.",
-        OPTION_COWER_DUNGEON = "Dérobade seulement en donjon et en raid",
-        OPTION_COWER_DUNGEON_NOTE = "Surveiller Dérobade seulement dans un donjon ou un raid ; le mode kite "
-            .. "avertit toujours partout. Comme /pac dungeon cower on et off.",
         OPTION_REMIND = "Rappel au début du combat",
         OPTION_REMIND_NOTE = "Ce qui est encore faux redonne une alerte au pull. Comme /pac remind on et off.",
         OPTION_SOUND = "Son",

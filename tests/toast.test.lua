@@ -1,7 +1,12 @@
 -- The toast: its animation, hold on hover, closing, moving, the queue and the sound.
 
 local function showGrowl(client)
-    client.ns.ShowToast(client.ns.ProblemToast("growl"))
+    client.ns.ShowToast(client.ns.ProblemToast("growlOn", "dungeon"))
+    return client
+end
+
+local function showCower(client)
+    client.ns.ShowToast(client.ns.ProblemToast("cowerOn", "solo"))
     return client
 end
 
@@ -28,8 +33,7 @@ test("hovering holds the toast; leaving lets it fade", function()
 end)
 
 test("right-click closes it and shows the next; other clicks do not", function()
-    local client = showGrowl(NewClient():login())
-    client.ns.ShowToast(client.ns.ProblemToast("cower"))
+    local client = showCower(showGrowl(NewClient():login()))
     client.toast.scripts.OnMouseUp(client.toast, "LeftButton")
     eq(client:toastTitle(), "Growl is on autocast")
     client.toast.scripts.OnMouseUp(client.toast, "RightButton")
@@ -41,9 +45,7 @@ end)
 
 test("one problem gets one toast, up or waiting", function()
     local client = showGrowl(NewClient():login())
-    showGrowl(client)
-    client.ns.ShowToast(client.ns.ProblemToast("cower"))
-    client.ns.ShowToast(client.ns.ProblemToast("cower"))
+    showCower(showCower(showGrowl(client)))
     client.ns.HideToast()
     eq(client:toastTitle(), "Cower is on autocast")
     client.ns.HideToast()
@@ -51,9 +53,8 @@ test("one problem gets one toast, up or waiting", function()
 end)
 
 test("a solved problem's waiting toast is dropped", function()
-    local client = showGrowl(NewClient():login())
-    client.ns.ShowToast(client.ns.ProblemToast("cower"))
-    client.ns.DropToast("cower")
+    local client = showCower(showGrowl(NewClient():login()))
+    client.ns.DropToast("cowerOn")
     client.ns.HideToast()
     eq(client.toast.shown, false)
 end)
@@ -62,7 +63,7 @@ test("dropping a toast that is already fading does not restart the fade", functi
     local client = showGrowl(NewClient():login())
     client:animate(6.3)
     local alpha = client.toast.alpha
-    client.ns.DropToast("growl")
+    client.ns.DropToast("growlOn")
     client:animate(0.05)
     ok(client.toast.alpha < alpha)
 end)

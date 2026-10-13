@@ -14,7 +14,7 @@ end
 test("an unknown client locale falls back to enUS", function()
     local ns = NewClient({ locale = "zhCN" }).ns
     eq(ns.LocaleCode, "enUS")
-    eq(ns.L.KITE_ON, "Kite mode on: Cower belongs on autocast.")
+    eq(ns.L.KITE_ON, "Kite mode on: Growl off, Cower on.")
 end)
 
 test("a translated string comes from the client's locale", function()
