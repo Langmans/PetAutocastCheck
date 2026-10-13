@@ -23,9 +23,11 @@ it to attack.
 
 - **Growl** on autocast while you are in a party or raid, inside a dungeon or
   raid instance. A group questing in the open world is left alone; switch
-  that off (`/pac dungeon off`, or the **Only in dungeons and raids**
-  checkbox) to be warned in every group.
-- **Cower** on autocast, unless you are in kite mode.
+  that off (`/pac dungeon growl off`, or the **Growl only in dungeons and
+  raids** checkbox) to be warned in every group.
+- **Cower** on autocast, unless you are in kite mode. Everywhere by default;
+  `/pac dungeon cower on` (or the **Cower only in dungeons and raids**
+  checkbox) limits it to dungeons and raids.
 - **Kite mode**: Cower belongs on autocast, so it is the other way round: a
   toast when Cower is **off**. Switch it with `/pac kite`, the key binding,
   or the checkbox in the panel.
@@ -78,8 +80,9 @@ Made for WoW: Forever (1.60).
 Open the panel with `/pac config`, or through Esc > Options > AddOns > Pet
 Autocast Check. It shows the version and website, and has:
 
-- **Kite mode**, **Watch Growl**, **Only in dungeons and raids**, **Watch
-  Cower** and **Remind me when combat starts**.
+- **Kite mode**, **Watch Growl**, **Growl only in dungeons and raids**,
+  **Watch Cower**, **Cower only in dungeons and raids** and **Remind me when
+  combat starts**.
 - **Toast stays for** and **Toast size**: sliders for how long the toast
   stays and how big it is.
 - **Sound**: your pet's call, the raid warning, or none.
@@ -93,8 +96,10 @@ commands too (`/petautocastcheck` works as well):
 - `/pac config` (or `/pac options`) opens the panel.
 - `/pac kite` toggles kite mode; `/pac kite on` and `/pac kite off` set it.
 - `/pac growl on|off` and `/pac cower on|off` switch each warning.
-- `/pac dungeon on|off`: the Growl warning only inside a dungeon or raid (the
-  default), or in every group.
+- `/pac dungeon growl on|off`: the Growl warning only inside a dungeon or
+  raid (the default), or in every group.
+- `/pac dungeon cower on|off`: the Cower warning only inside a dungeon or
+  raid, or everywhere (the default). Kite mode warns everywhere either way.
 - `/pac remind on|off` switches the reminder when combat starts.
 - `/pac test [growl|cower|kite]` shows the toast for that problem, whatever
   your pet says. Nothing else happens.
@@ -165,7 +170,8 @@ In `.toc` order; all share the addon namespace `ns`.
 
 The settings are saved account-wide in `PetAutocastCheckDB`: `duration`
 (whole seconds, from 1), `scale` (0.3 to 3), `sound` (`"family"`,
-`"warning"` or `"off"`), `growl`, `dungeon`, `cower`, `kite`, `remind` and `debug`
+`"warning"` or `"off"`), `growl`, `growlDungeon`, `cower`, `cowerDungeon`,
+`kite`, `remind` and `debug`
 (booleans), and `pos`, the dragged spot as `{ point, relativePoint, x, y }`.
 Only values that differ from their default are kept: `ns.db` reads the rest
 from the defaults through a metatable, a broken value is dropped on load so
@@ -194,8 +200,9 @@ its default shows through, numbers are put back in range, and
   are looked up in the client, and every rank carries the same name, so
   nothing compares English text.
 - The rules, per problem key: `growl` is Growl on while `IsInGroup()`, and
-  with `dungeon` on also `IsInInstance()` of type `party` or `raid`; `cower`
-  is Cower on outside kite mode; `cowerOff` is Cower off in kite mode. The
+  with `growlDungeon` on also `IsInInstance()` of type `party` or `raid`;
+  `cower` is Cower on outside kite mode, with `cowerDungeon` on only in such
+  an instance; `cowerOff` is Cower off in kite mode, anywhere. The
   `growl` and `cower` settings switch off their own rule; kite mode is its
   own switch for `cowerOff`.
 - `ns.Check` compares what is wrong now with the previous check: a new

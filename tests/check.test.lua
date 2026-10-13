@@ -51,11 +51,35 @@ test("alone in a dungeon, Growl on is fine", function()
     eq(client.toast.shown, false)
 end)
 
-test("with the dungeon setting off, any group counts, outside too", function()
-    local client = NewClient({ savedDB = { dungeon = false } })
+test("with growlDungeon off, any group counts, outside too", function()
+    local client = NewClient({ savedDB = { growlDungeon = false } })
     client.instance = "none"
     client:login():group(true)
     eq(client:toastTitle(), "Growl is on autocast")
+end)
+
+test("Cower is watched everywhere by default, outside a dungeon too", function()
+    local client = NewClient():setAutocast(COWER, true)
+    client.instance = "none"
+    client:login()
+    eq(client:toastTitle(), "Cower is on autocast")
+end)
+
+test("with cowerDungeon on, Cower is only watched inside a dungeon or raid", function()
+    local client = NewClient({ savedDB = { cowerDungeon = true } }):setAutocast(COWER, true)
+    client.instance = "none"
+    client:login()
+    eq(client.toast.shown, false)
+    client.instance = "raid"
+    client:fire("PLAYER_ENTERING_WORLD"):advance(0.2)
+    eq(client:toastTitle(), "Cower is on autocast")
+end)
+
+test("cowerDungeon leaves kite mode alone: Cower off still toasts outside", function()
+    local client = NewClient({ savedDB = { cowerDungeon = true, kite = true } })
+    client.instance = "none"
+    client:login()
+    eq(client:toastTitle(), "Cower is not on autocast")
 end)
 
 test("turning Growl off in the group takes the toast away; on again toasts again", function()

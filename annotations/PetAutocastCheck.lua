@@ -9,7 +9,8 @@
 ---@field scale number from 0.3 to 3 (/pac scale)
 ---@field sound PetAutocastCheckSoundMode (/pac sound)
 ---@field growl boolean warn when Growl is on autocast in a group (/pac growl)
----@field dungeon boolean the Growl warning only in a dungeon or raid instance (/pac dungeon)
+---@field growlDungeon boolean the Growl warning only in a dungeon or raid instance (/pac dungeon growl)
+---@field cowerDungeon boolean the Cower warning only in a dungeon or raid instance (/pac dungeon cower); kite mode is not affected
 ---@field cower boolean warn when Cower is on autocast outside kite mode (/pac cower)
 ---@field kite boolean kite mode: Cower belongs on autocast, so warn when it is off (/pac kite)
 ---@field remind boolean toast what is still wrong again when combat starts (/pac remind)

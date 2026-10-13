@@ -12,7 +12,8 @@ ns.Locales.frFR = {
         HINT_TURN_ON = "Clic droit dessus dans la barre du familier ou dans le grimoire du familier "
             .. "pour activer le lancement automatique.",
 
-        STATUS = "Mode kite %s. Surveillance de Grondement %s (seulement en donjon %s), Dérobade %s, "
+        STATUS = "Mode kite %s. Surveillance de Grondement %s (seulement en donjon %s), "
+            .. "Dérobade %s (seulement en donjon %s), "
             .. "rappel en combat %s. "
             .. "Alerte pendant %d s à la taille %.2f, son %s, débogage %s. Commandes : %s",
         STATUS_ON = "activé",
@@ -22,8 +23,10 @@ ns.Locales.frFR = {
         KITE_OFF = "Mode kite désactivé : Dérobade ne doit pas être en lancement automatique.",
         GROWL_ON = "Grondement en lancement automatique en groupe donne une alerte.",
         GROWL_OFF = "Grondement n'est pas surveillé.",
-        DUNGEON_ON = "Grondement n'est surveillé qu'en donjon et en raid.",
-        DUNGEON_OFF = "Grondement est surveillé dans tout groupe, en monde ouvert aussi.",
+        GROWL_DUNGEON_ON = "Grondement n'est surveillé qu'en donjon et en raid.",
+        GROWL_DUNGEON_OFF = "Grondement est surveillé dans tout groupe, en monde ouvert aussi.",
+        COWER_DUNGEON_ON = "Dérobade n'est surveillée qu'en donjon et en raid (le mode kite partout).",
+        COWER_DUNGEON_OFF = "Dérobade est surveillée partout.",
         COWER_ON = "Dérobade en lancement automatique hors du mode kite donne une alerte.",
         COWER_OFF = "Dérobade n'est pas surveillée hors du mode kite.",
         REMIND_ON = "Ce qui est encore faux redonne une alerte au début du combat.",
@@ -57,12 +60,16 @@ ns.Locales.frFR = {
         OPTION_GROWL = "Surveiller Grondement",
         OPTION_GROWL_NOTE = "Une alerte quand Grondement est en lancement automatique en groupe ou en raid. "
             .. "Comme /pac growl on et off.",
-        OPTION_DUNGEON = "Seulement en donjon et en raid",
-        OPTION_DUNGEON_NOTE = "Surveiller Grondement seulement dans un donjon ou un raid, où un tank tient "
-            .. "la menace ; un groupe qui fait des quêtes dehors est laissé tranquille. Comme /pac dungeon on et off.",
+        OPTION_GROWL_DUNGEON = "Grondement seulement en donjon et en raid",
+        OPTION_GROWL_DUNGEON_NOTE = "Surveiller Grondement seulement dans un donjon ou un raid, où un tank "
+            .. "tient la menace ; un groupe qui fait des quêtes dehors est laissé tranquille. "
+            .. "Comme /pac dungeon growl on et off.",
         OPTION_COWER = "Surveiller Dérobade",
         OPTION_COWER_NOTE = "Une alerte quand Dérobade est en lancement automatique hors du mode kite. "
             .. "Comme /pac cower on et off.",
+        OPTION_COWER_DUNGEON = "Dérobade seulement en donjon et en raid",
+        OPTION_COWER_DUNGEON_NOTE = "Surveiller Dérobade seulement dans un donjon ou un raid ; le mode kite "
+            .. "avertit toujours partout. Comme /pac dungeon cower on et off.",
         OPTION_REMIND = "Rappel au début du combat",
         OPTION_REMIND_NOTE = "Ce qui est encore faux redonne une alerte au pull. Comme /pac remind on et off.",
         OPTION_SOUND = "Son",

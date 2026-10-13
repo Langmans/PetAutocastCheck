@@ -18,10 +18,11 @@ ns.Locales.enUS = {
         HINT_TURN_OFF = "Right-click it on the pet bar or in your pet's spellbook to turn autocast off.",
         HINT_TURN_ON = "Right-click it on the pet bar or in your pet's spellbook to turn autocast on.",
 
-        -- /pac. STATUS: kite mode, Growl, Growl only in dungeons, Cower and the combat reminder
-        -- on/off, the toast's duration in seconds and scale, sound (a SOUND_NAME_* or STATUS_OFF),
-        -- debug on/off, the command list.
-        STATUS = "Kite mode %s. Watching Growl %s (only in dungeons %s), Cower %s, reminder in combat %s. "
+        -- /pac. STATUS: kite mode, Growl, Growl only in dungeons, Cower, Cower only in dungeons and
+        -- the combat reminder on/off, the toast's duration in seconds and scale, sound (a
+        -- SOUND_NAME_* or STATUS_OFF), debug on/off, the command list.
+        STATUS = "Kite mode %s. Watching Growl %s (only in dungeons %s), Cower %s (only in dungeons %s), "
+            .. "reminder in combat %s. "
             .. "Toast for %d s at scale %.2f, sound %s, debug %s. Commands: %s",
         STATUS_ON = "on",
         STATUS_OFF = "off",
@@ -32,10 +33,12 @@ ns.Locales.enUS = {
         KITE_OFF = "Kite mode off: Cower belongs off autocast.",
         GROWL_ON = "Growl on autocast in a group gets a toast.",
         GROWL_OFF = "Growl is not watched.",
-        DUNGEON_ON = "Growl is only watched in a dungeon or raid.",
-        DUNGEON_OFF = "Growl is watched in every group, in the open world too.",
+        GROWL_DUNGEON_ON = "Growl is only watched in a dungeon or raid.",
+        GROWL_DUNGEON_OFF = "Growl is watched in every group, in the open world too.",
         COWER_ON = "Cower on autocast outside kite mode gets a toast.",
         COWER_OFF = "Cower is not watched outside kite mode.",
+        COWER_DUNGEON_ON = "Cower is only watched in a dungeon or raid (kite mode still everywhere).",
+        COWER_DUNGEON_OFF = "Cower is watched everywhere.",
         REMIND_ON = "What is still wrong toasts again when combat starts.",
         REMIND_OFF = "No reminder when combat starts.",
         SOUND_FAMILY = "Sound: your pet's call, as when you send it to attack (the raid warning when it has none).",
@@ -68,11 +71,14 @@ ns.Locales.enUS = {
         OPTION_GROWL = "Watch Growl",
         OPTION_GROWL_NOTE = "A toast when Growl is on autocast while you are in a party or raid. "
             .. "Same as /pac growl on and off.",
-        OPTION_DUNGEON = "Only in dungeons and raids",
-        OPTION_DUNGEON_NOTE = "Watch Growl only inside a dungeon or raid, where a tank holds the threat; "
-            .. "a group questing outside is left alone. Same as /pac dungeon on and off.",
+        OPTION_GROWL_DUNGEON = "Growl only in dungeons and raids",
+        OPTION_GROWL_DUNGEON_NOTE = "Watch Growl only inside a dungeon or raid, where a tank holds the threat; "
+            .. "a group questing outside is left alone. Same as /pac dungeon growl on and off.",
         OPTION_COWER = "Watch Cower",
         OPTION_COWER_NOTE = "A toast when Cower is on autocast outside kite mode. Same as /pac cower on and off.",
+        OPTION_COWER_DUNGEON = "Cower only in dungeons and raids",
+        OPTION_COWER_DUNGEON_NOTE = "Watch Cower only inside a dungeon or raid; kite mode still warns everywhere. "
+            .. "Same as /pac dungeon cower on and off.",
         OPTION_REMIND = "Remind me when combat starts",
         OPTION_REMIND_NOTE = "Whatever is still wrong toasts again at the pull. Same as /pac remind on and off.",
         OPTION_SOUND = "Sound",

@@ -3,9 +3,10 @@ local ADDON_NAME, ns = ...
 -- What counts as wrong, from the pet bar's autocast state:
 --   - growl:    Growl on autocast while in a party or raid. There the tank holds threat, and a
 --               pet that taunts on its own pulls mobs off them. Solo, Growl on is what you want.
---               With the dungeon setting (the default) only inside a dungeon or raid instance:
---               a group questing in the open world usually has no tank to pull mobs off.
+--               With growlDungeon (the default) only inside a dungeon or raid instance: a group
+--               questing in the open world usually has no tank to pull mobs off.
 --   - cower:    Cower on autocast outside kite mode. It throws away the threat the pet holds.
+--               With cowerDungeon (off by default) only inside a dungeon or raid instance.
 --   - cowerOff: Cower off autocast in kite mode. While the hunter kites, the pet should not keep
 --               the mob's attention, so Cower belongs on.
 -- Each problem toasts when it starts; when it is solved, its toast goes away. With the remind
@@ -119,11 +120,11 @@ local function InDungeon()
     return inInstance == true and (kind == "party" or kind == "raid")
 end
 
----Whether Growl on autocast is wrong here: in a group, and with the dungeon setting in a dungeon
----or raid as well.
+---Whether a warning whose "only in dungeons" setting is `dungeonOnly` applies here.
+---@param dungeonOnly boolean
 ---@return boolean
-local function GrowlWrongHere()
-    return IsInGroup() and (not ns.db.dungeon or InDungeon())
+local function HereCounts(dungeonOnly)
+    return not dungeonOnly or InDungeon()
 end
 
 ---What is wrong right now, by problem key.
@@ -135,14 +136,14 @@ local function Problems()
     local states = ns.PetAutocasts()
     local growlName = ns.SpellInfo(GROWL)
     local growl = growlName and states[growlName]
-    if growl and growl.on and db.growl and GrowlWrongHere() then
+    if growl and growl.on and db.growl and IsInGroup() and HereCounts(db.growlDungeon) then
         found.growl = ns.ProblemToast("growl", growlName, growl.icon)
     end
     local cowerName = ns.SpellInfo(COWER)
     local cower = cowerName and states[cowerName]
     if cower and db.kite and not cower.on then
         found.cowerOff = ns.ProblemToast("cowerOff", cowerName, cower.icon)
-    elseif cower and not db.kite and db.cower and cower.on then
+    elseif cower and not db.kite and db.cower and cower.on and HereCounts(db.cowerDungeon) then
         found.cower = ns.ProblemToast("cower", cowerName, cower.icon)
     end
     return found

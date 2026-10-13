@@ -7,7 +7,8 @@
   kiting. It goes away by itself once you fix it. Growl and Cower are seen on
   the pet bar and in the pet's spellbook.
 - The Growl warning comes only in a dungeon or raid by default; `/pac dungeon
-  off` (or the checkbox) warns in every group.
+  growl off` (or its checkbox) warns in every group. The Cower warning can be
+  limited to dungeons and raids the same way (`/pac dungeon cower on`).
 - Kite mode: Cower belongs on autocast, and the toast tells you when it is
   off. Toggle it with `/pac kite`, set it with `/pac kite on|off` (quiet when
   nothing changes, so it fits a Distracting Shot macro), with a key binding or
