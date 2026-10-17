@@ -1,6 +1,6 @@
 # Pet Autocast Check
 
-[![Release](https://img.shields.io/github/v/release/Langmans/PetAutocastCheck?include_prereleases&sort=semver)](https://github.com/Langmans/PetAutocastCheck/releases)
+[![Release](https://img.shields.io/github/v/release/Langmans/PetAutocastCheck?include_prereleases)](https://github.com/Langmans/PetAutocastCheck/releases)
 ![WoW: Forever](https://img.shields.io/badge/WoW-Forever%20%2816001%29-c79c6e)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://github.com/Langmans/PetAutocastCheck/blob/main/LICENSE)
 
